@@ -1,0 +1,9 @@
+.env
+.env.*
+node_modules/
+dist/
+server/uploads/
+.agents/
+.skills/
+*.lock
+skills-lock.json
