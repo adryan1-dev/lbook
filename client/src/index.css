@@ -1,394 +1,177 @@
-@import url("https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap");
+@import "tailwindcss";
 
-:root {
-  font-family: "Inter", Arial, sans-serif;
-  color: #2f2a26;
-  background: #f7f0e8;
-  line-height: 1.5;
-  font-weight: 400;
-}
+@theme {
+  --font-sans:
+    "Figtree", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-display: "Fraunces", Georgia, "Times New Roman", serif;
 
-* {
-  box-sizing: border-box;
-}
+  /* Azul bebê: o chão da estante e as superfícies calmas. */
+  --color-mist-50: #f7fbff;
+  --color-mist-100: #eaf2fc;
+  --color-mist-200: #d8e7f8;
+  --color-mist-300: #bcd4f0;
+  --color-mist-400: #93b6e2;
+  --color-mist-500: #6d95cd;
+  --color-mist-600: #4f77b4;
+  --color-mist-700: #3d5e91;
 
-body {
-  margin: 0;
-  background: radial-gradient(
-    circle at top left,
-    #fffaf5 0%,
-    #f7f0e8 45%,
-    #efe0d0 100%
-  );
-}
+  /* Rosa bebê: calor e destaque, nunca ação. */
+  --color-blush-50: #fff7fa;
+  --color-blush-100: #fdeaf1;
+  --color-blush-200: #fad6e3;
+  --color-blush-300: #f5b9ce;
+  --color-blush-400: #e991ae;
+  --color-blush-600: #b85578;
 
-button,
-input,
-textarea {
-  font: inherit;
-}
+  --color-ink-900: #26334a;
+  --color-ink-700: #44506a;
+  --color-ink-500: #5c6a83;
+  --color-ink-400: #8592a8;
 
-button {
-  cursor: pointer;
-}
+  /* Âmbar das notas e vermelho das ações destrutivas. */
+  --color-sun-400: #f0b950;
+  --color-sun-500: #d99a2b;
+  --color-berry-500: #c9485a;
+  --color-berry-600: #ad3a4b;
 
-.app-shell {
-  min-height: 100vh;
-  padding: clamp(16px, 3vw, 32px);
-}
+  --shadow-cover: 0 10px 22px -12px rgb(61 94 145 / 45%);
+  --shadow-panel: 0 24px 60px -20px rgb(38 51 74 / 35%);
 
-.hero {
-  max-width: 1280px;
-  margin: 0 auto 24px;
-  padding: clamp(24px, 4vw, 36px);
-  border-radius: 28px;
-  background: rgba(255, 250, 245, 0.95);
-  box-shadow: 0 16px 40px rgba(110, 85, 72, 0.12);
-  border: 1px solid rgba(110, 85, 72, 0.08);
-}
+  --ease-out-quart: cubic-bezier(0.165, 0.84, 0.44, 1);
 
-.eyebrow {
-  text-transform: uppercase;
-  letter-spacing: 0.3em;
-  color: #aab69a;
-  font-weight: 700;
-  margin: 0 0 8px;
-  font-size: 0.8rem;
-}
+  --animate-panel-in: panel-in 240ms var(--ease-out-quart);
+  --animate-backdrop-in: backdrop-in 240ms var(--ease-out-quart);
 
-.hero h1 {
-  margin: 0;
-  font-family: "Baloo 2", "Trebuchet MS", sans-serif;
-  font-size: clamp(2rem, 5vw, 3rem);
-  color: #6e5548;
-}
+  @keyframes panel-in {
+    from {
+      opacity: 0;
+      transform: translateY(10px) scale(0.985);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
 
-.hero-copy,
-.panel-copy {
-  margin-top: 8px;
-  max-width: 720px;
-  color: #5b4a3e;
-}
-
-.content-grid {
-  max-width: 1280px;
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: minmax(320px, 500px) 1fr;
-  gap: 24px;
-}
-
-.panel {
-  background: rgba(255, 250, 245, 0.95);
-  border-radius: 28px;
-  padding: clamp(18px, 2.5vw, 28px);
-  box-shadow: 0 14px 32px rgba(110, 85, 72, 0.1);
-  border: 1px solid rgba(110, 85, 72, 0.08);
-}
-
-.panel h2 {
-  margin: 0 0 4px;
-  color: #6e5548;
-  font-family: "Baloo 2", "Trebuchet MS", sans-serif;
-}
-
-.book-form {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.book-form label,
-.review-label {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  font-weight: 600;
-  color: #4d4038;
-  font-family: "Baloo 2", "Trebuchet MS", sans-serif;
-}
-
-.book-form input[type="text"],
-.book-form input[type="file"],
-.book-form textarea {
-  padding: 10px 12px;
-  border: 1px solid #e5d8cb;
-  border-radius: 14px;
-  background: #fff;
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease;
-}
-
-.book-form input:focus,
-.book-form textarea:focus {
-  outline: none;
-  border-color: #aab69a;
-  box-shadow: 0 0 0 3px rgba(170, 182, 154, 0.2);
-}
-
-.rating-grid {
-  display: grid;
-  gap: 10px;
-}
-
-.rating-block {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 12px;
-  border-radius: 16px;
-  background: #fcf8f2;
-  border: 1px solid #efe0d0;
-}
-
-.rating-block label {
-  font-family: "Baloo 2", "Trebuchet MS", sans-serif;
-  font-size: 1rem;
-}
-
-.rating-label-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 8px;
-}
-
-.hint-trigger {
-  position: relative;
-  width: 24px;
-  height: 24px;
-  border-radius: 999px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: #f4e9df;
-  color: #6e5548;
-  font-weight: 700;
-  font-size: 0.9rem;
-}
-
-.hint-card {
-  position: absolute;
-  right: 0;
-  top: calc(100% + 8px);
-  background: #2f2a26;
-  color: #fff;
-  padding: 8px 10px;
-  border-radius: 10px;
-  min-width: 180px;
-  font-size: 0.82rem;
-  z-index: 2;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
-}
-
-.stars-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-}
-
-.stars {
-  display: flex;
-  gap: 6px;
-}
-
-.star {
-  border: none;
-  background: transparent;
-  color: #d9c4b0;
-  font-size: 1.45rem;
-  cursor: pointer;
-  padding: 0;
-  transition:
-    transform 0.2s ease,
-    color 0.2s ease,
-    filter 0.2s ease;
-  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.06);
-}
-
-.star:hover {
-  transform: translateY(-1px);
-  color: #f2b66b;
-  filter: drop-shadow(0 2px 4px rgba(242, 182, 107, 0.3));
-}
-
-.star.active {
-  color: #ffb84d;
-  filter: drop-shadow(0 2px 6px rgba(255, 184, 77, 0.45));
-}
-
-.rating-value {
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: #6e5548;
-  font-family: "Baloo 2", "Trebuchet MS", sans-serif;
-}
-
-.summary-box {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 14px;
-  border-radius: 14px;
-  background: #f4e9df;
-  font-weight: 700;
-  color: #6e5548;
-  font-family: "Baloo 2", "Trebuchet MS", sans-serif;
-}
-
-.primary-button {
-  border: none;
-  padding: 12px 16px;
-  border-radius: 999px;
-  background: linear-gradient(135deg, #aab69a 0%, #8fa07b 100%);
-  color: white;
-  cursor: pointer;
-  font-family: "Baloo 2", "Trebuchet MS", sans-serif;
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
-}
-
-.primary-button:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 10px 20px rgba(138, 157, 120, 0.24);
-}
-
-.message {
-  background: #f5ebe2;
-  padding: 10px 12px;
-  border-radius: 12px;
-  color: #6e5548;
-  margin-bottom: 12px;
-}
-
-.panel-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 16px;
-}
-
-.pill {
-  padding: 6px 10px;
-  border-radius: 999px;
-  background: #f4e9df;
-  color: #6e5548;
-  font-size: 0.9rem;
-  font-weight: 700;
-}
-
-.book-list {
-  display: grid;
-  gap: 14px;
-}
-
-.book-card {
-  display: grid;
-  grid-template-columns: 100px 1fr;
-  gap: 14px;
-  padding: 12px;
-  border: 1px solid #efe0d0;
-  border-radius: 18px;
-  background: #fff;
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
-}
-
-.book-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 18px rgba(110, 85, 72, 0.08);
-}
-
-.book-cover {
-  width: 100px;
-  height: 140px;
-  object-fit: cover;
-  border-radius: 12px;
-  background: #f2e7dc;
-}
-
-.book-cover.placeholder {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #8d7b6f;
-  font-size: 0.9rem;
-}
-
-.book-info h3 {
-  margin: 0 0 4px;
-  color: #4d4038;
-}
-
-.book-info p {
-  margin: 0 0 8px;
-  color: #7b6c61;
-}
-
-.review-snippet {
-  font-size: 0.92rem;
-  color: #6e5548;
-  margin-bottom: 10px;
-}
-
-.mini-rating {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
-  color: #6e5548;
-}
-
-.card-actions {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.card-actions button {
-  border: none;
-  background: #f4e9df;
-  color: #6e5548;
-  padding: 8px 10px;
-  border-radius: 999px;
-  cursor: pointer;
-}
-
-.empty-state {
-  color: #7b6c61;
-}
-
-@media (max-width: 960px) {
-  .content-grid {
-    grid-template-columns: 1fr;
+  @keyframes backdrop-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
   }
 }
 
-@media (max-width: 640px) {
-  .app-shell {
-    padding: 14px;
+@layer base {
+  html {
+    color-scheme: light;
+    -webkit-tap-highlight-color: transparent;
   }
 
-  .hero {
-    padding: 20px;
+  body {
+    margin: 0;
+    min-height: 100dvh;
+    background-color: var(--color-mist-50);
+    /* Duas manchas de luz: rosa entrando pela esquerda, azul pela direita. */
+    background-image:
+      radial-gradient(
+        90% 55% at 12% 0%,
+        rgb(253 234 241 / 90%),
+        transparent 62%
+      ),
+      radial-gradient(
+        85% 55% at 96% 6%,
+        rgb(216 231 248 / 95%),
+        transparent 58%
+      );
+    background-attachment: fixed;
+    color: var(--color-ink-900);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
   }
 
-  .book-card {
-    grid-template-columns: 1fr;
+  :focus-visible {
+    outline: 2px solid var(--color-mist-600);
+    outline-offset: 2px;
   }
 
-  .book-cover {
+  button,
+  input,
+  textarea,
+  select {
+    font: inherit;
+    color: inherit;
+  }
+
+  button,
+  label,
+  summary,
+  a {
+    touch-action: manipulation;
+  }
+}
+
+@layer components {
+  /* O <dialog> nativo carrega foco preso, Esc e camada superior de graça.
+     O display fica no CSS para o elemento continuar oculto antes de showModal(). */
+  .lb-dialog {
+    display: none;
+    position: fixed;
+    max-width: none;
+    max-height: none;
+    inset: 0;
     width: 100%;
-    height: 180px;
+    height: 100%;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    overflow: hidden;
   }
 
-  .panel-head {
-    flex-direction: column;
-    align-items: flex-start;
+  .lb-dialog[open] {
+    display: flex;
+  }
+
+  .lb-dialog::backdrop {
+    background-color: rgb(38 51 74 / 42%);
+  }
+
+  .lb-dialog[open]::backdrop {
+    animation: var(--animate-backdrop-in);
+  }
+
+  .lb-panel {
+    animation: var(--animate-panel-in);
+  }
+
+  /* Estantes longas: o navegador pula o layout dos cards fora da tela. */
+  .lb-shelf-item {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 340px;
+  }
+
+  /* A lombada: sombra vertical na borda esquerda da capa. */
+  .lb-spine {
+    background-image: linear-gradient(
+      90deg,
+      rgb(38 51 74 / 26%) 0%,
+      rgb(38 51 74 / 6%) 3.5%,
+      rgb(255 255 255 / 22%) 6%,
+      rgb(38 51 74 / 5%) 9%,
+      transparent 14%
+    );
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after,
+  ::backdrop {
+    animation-duration: 0.01ms;
+    animation-iteration-count: 1;
+    transition-duration: 0.01ms;
+    scroll-behavior: auto;
   }
 }

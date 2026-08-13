@@ -1,46 +1,52 @@
-import { useState } from "react";
+import { useId } from "react";
+import StarIcon from "./StarIcon";
 
-function StarRating({ label, value, onChange, hint }) {
-  const [showHint, setShowHint] = useState(false);
+const STARS = [1, 2, 3, 4, 5];
 
-  const handleSelect = (star, event) => {
-    event.preventDefault();
-    onChange(star);
-  };
+/** Rádios nativos: setas do teclado e leitores de tela funcionam sem JS extra. */
+function StarRating({ label, hint, value, onChange }) {
+  const name = useId();
 
   return (
-    <div className="rating-block">
-      <div className="rating-label-row">
-        <label>{label}</label>
-        <span
-          className="hint-trigger"
-          onMouseEnter={() => setShowHint(true)}
-          onMouseLeave={() => setShowHint(false)}
-          onFocus={() => setShowHint(true)}
-          onBlur={() => setShowHint(false)}
-          tabIndex={0}
-        >
-          ?{showHint ? <span className="hint-card">{hint}</span> : null}
-        </span>
-      </div>
-      <div className="stars-row">
-        <div className="stars">
-          {[1, 2, 3, 4, 5].map((star) => (
-            <button
+    <fieldset className="rounded-2xl bg-mist-100 px-3 py-2.5">
+      <legend className="font-display text-sm font-semibold text-ink-900">
+        {label}
+      </legend>
+
+      <p className="text-xs text-ink-500">{hint}</p>
+
+      <div className="mt-1 flex items-center justify-between gap-2">
+        <div className="flex">
+          {STARS.map((star) => (
+            <label
               key={star}
-              type="button"
-              className={star <= value ? "star active" : "star"}
-              onMouseDown={(event) => event.preventDefault()}
-              onClick={(event) => handleSelect(star, event)}
-              aria-label={`${label}: ${star} estrelas`}
+              className="flex size-11 cursor-pointer items-center justify-center"
             >
-              ★
-            </button>
+              <input
+                type="radio"
+                name={name}
+                value={star}
+                checked={value === star}
+                onChange={() => onChange(star)}
+                className="peer sr-only"
+              />
+              <StarIcon
+                className={`size-6 transition-colors duration-150 ease-out peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-mist-600 ${
+                  star <= value ? "text-sun-400" : "text-mist-300"
+                }`}
+              />
+              <span className="sr-only">
+                {star === 1 ? "1 estrela" : `${star} estrelas`}
+              </span>
+            </label>
           ))}
         </div>
-        <span className="rating-value">{value}/5</span>
+
+        <span className="text-sm font-semibold tabular-nums text-ink-500">
+          {value}/5
+        </span>
       </div>
-    </div>
+    </fieldset>
   );
 }
 
