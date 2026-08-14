@@ -1,13 +1,13 @@
 # Lbook
 
-**React 18** · **Vite 5** · **Tailwind CSS 4** · **Express 4** · **Node.js** · **PostgreSQL** · **Multer**
+**React** · **Vite** · **Tailwind CSS** · **Express** · **Node.js** · **PostgreSQL** · **Multer**
 
-![Node.js](https://img.shields.io/badge/Node.js-20+-3c873a?style=flat-square&logo=node.js&logoColor=white)
-![React](https://img.shields.io/badge/React-18-61dafb?style=flat-square&logo=react&logoColor=black)
-![Vite](https://img.shields.io/badge/Vite-5-646cff?style=flat-square&logo=vite&logoColor=white)
-![Express](https://img.shields.io/badge/Express-4-000000?style=flat-square&logo=express&logoColor=white)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169e1?style=flat-square&logo=postgresql&logoColor=white)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-38bdf8?style=flat-square&logo=tailwindcss&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-black?style=flat-square&logo=node.js&logoColor=white)
+![React](https://img.shields.io/badge/React-61dafb?style=flat-square&logo=react&logoColor=black)
+![Vite](https://img.shields.io/badge/Vite-646cff?style=flat-square&logo=vite&logoColor=white)
+![Express](https://img.shields.io/badge/Express-000000?style=flat-square&logo=express&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169e1?style=flat-square&logo=postgresql&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38bdf8?style=flat-square&logo=tailwindcss&logoColor=white)
 
 Caderno pessoal de leituras: catalogar o que você tem, organizar por status, avaliar, escrever resenhas e acompanhar o progresso — tudo em uma Estante simples.
 
@@ -21,9 +21,9 @@ O Lbook é um monorepo npm workspaces com frontend e API separados:
 
 | Camada | Tecnologia | Papel |
 | --- | --- | --- |
-| UI | **React 18** + **Vite 5** | Estante, formulários, busca e modais |
-| Estilo | **Tailwind CSS 4** (`@tailwindcss/vite`) | Layout e identidade visual |
-| API | **Node.js** + **Express 4** | REST, validação de status, schema no boot |
+| UI | **React** + **Vite** | Estante, formulários, busca e modais |
+| Estilo | **Tailwind CSS** (`@tailwindcss/vite`) | Layout e identidade visual |
+| API | **Node.js** + **Express** | REST, validação de status, schema no boot |
 | Upload | **Multer** | Capa da leitura em `server/uploads` |
 | Dados | **PostgreSQL** (`pg`) | Persistência da tabela `books` |
 | Dev | **concurrently** | Sobe client + server com `npm run dev` |
