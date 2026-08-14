@@ -1,10 +1,12 @@
 # Lbook
 
+**React 18** · **Vite 5** · **Tailwind CSS 4** · **Express 4** · **Node.js** · **PostgreSQL** · **Multer**
+
 ![Node.js](https://img.shields.io/badge/Node.js-20+-3c873a?style=flat-square&logo=node.js&logoColor=white)
 ![React](https://img.shields.io/badge/React-18-61dafb?style=flat-square&logo=react&logoColor=black)
 ![Vite](https://img.shields.io/badge/Vite-5-646cff?style=flat-square&logo=vite&logoColor=white)
 ![Express](https://img.shields.io/badge/Express-4-000000?style=flat-square&logo=express&logoColor=white)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-pg-4169e1?style=flat-square&logo=postgresql&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169e1?style=flat-square&logo=postgresql&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-38bdf8?style=flat-square&logo=tailwindcss&logoColor=white)
 
 Caderno pessoal de leituras: catalogar o que você tem, organizar por status, avaliar, escrever resenhas e acompanhar o progresso — tudo em uma Estante simples.
