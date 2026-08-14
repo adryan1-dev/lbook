@@ -1,165 +1,85 @@
 # Lbook
 
-> Um caderno de leituras em evolução, pensado para transformar a experiência de registrar, avaliar e revisitar livros em algo bonito, simples e inteligente.
+![Node.js](https://img.shields.io/badge/Node.js-20+-3c873a?style=flat-square&logo=node.js&logoColor=white)
+![React](https://img.shields.io/badge/React-18-61dafb?style=flat-square&logo=react&logoColor=black)
+![Vite](https://img.shields.io/badge/Vite-5-646cff?style=flat-square&logo=vite&logoColor=white)
+![Express](https://img.shields.io/badge/Express-4-000000?style=flat-square&logo=express&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-pg-4169e1?style=flat-square&logo=postgresql&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-38bdf8?style=flat-square&logo=tailwindcss&logoColor=white)
 
-## ✨ O que é o Lbook?
+Caderno pessoal de leituras: catalogar o que você tem, organizar por status, avaliar, escrever resenhas e acompanhar o progresso — tudo em uma Estante simples.
 
-O Lbook é uma aplicação full-stack criada para ajudar você a organizar sua coleção de leituras com praticidade, personalidade e clareza. A ideia central é simples: cada leitura ganha um espaço próprio para armazenar informações importantes, registrar impressões e construir uma memória de livros que marcaram a sua jornada.
+[Visão geral](#visão-geral) · [Stack](#stack) · [Funcionalidades](#funcionalidades) · [Começando](#começando) · [Arquitetura](#arquitetura) · [API](#api) · [Estrutura](#estrutura-do-projeto) · [Glossário](#glossário)
 
-Neste primeiro ciclo, o projeto já entrega uma base sólida para cadastrar livros, avaliar cada obra por categorias, guardar resenhas e acompanhar tudo em uma interface visualmente agradável. O foco agora é evoluir para uma plataforma mais completa, intuitiva e preparada para crescer.
+---
 
-## 🌱 Visão de evolução
+## Stack
 
-O Lbook nasceu como um MVP, mas foi pensado com uma direção clara: virar uma experiência completa de acompanhamento literário. O projeto já passou por uma primeira camada funcional e agora está preparado para receber novas camadas de valor, com foco em organização, personalização e descoberta.
+O Lbook é um monorepo npm workspaces com frontend e API separados:
 
-A evolução acontecerá em etapas, começando pela base de cadastro e avaliação, e avançando para recursos que tragam mais contexto, inteligência e experiência ao usuário.
+| Camada | Tecnologia | Papel |
+| --- | --- | --- |
+| UI | **React 18** + **Vite 5** | Estante, formulários, busca e modais |
+| Estilo | **Tailwind CSS 4** (`@tailwindcss/vite`) | Layout e identidade visual |
+| API | **Node.js** + **Express 4** | REST, validação de status, schema no boot |
+| Upload | **Multer** | Capa da leitura em `server/uploads` |
+| Dados | **PostgreSQL** (`pg`) | Persistência da tabela `books` |
+| Dev | **concurrently** | Sobe client + server com `npm run dev` |
 
-## 🚀 Principais features já implementadas
+Proxy do Vite encaminha `/api` e `/uploads` para a API (`VITE_API_TARGET`, padrão `http://localhost:3000`).
 
-### 📚 Cadastro de leituras
+---
 
-O usuário pode registrar livros com título, autor e informações básicas, criando um espaço único para cada leitura.
+## Visão geral
 
-### ⭐ Avaliação por categorias
+Cada item da Estante é uma **Leitura** (não um “livro” na UI): título, autor, capa, status, notas opcionais e resenha.
 
-As avaliações são divididas em quatro categorias principais:
+A aba **Minha biblioteca** lista **todas** as leituras do banco e inclui busca por título/autor — útil para responder “você tem esse?”. No cadastro, **Minha biblioteca** também é o status padrão para o que você já possui e ainda não leu.
 
-- Enredo
-- Personagens
-- Edição
-- Final
+Demais status recortam a Estante: Quero comprar, Lendo, Lido, Abandonei.
 
-Essa estrutura permite que a nota final seja mais rica e alinhada com o que realmente importa na experiência de leitura.
+> [!TIP]
+> Vocabulário do produto (Leitura, Estante, Edição, etc.) vive em [`CONTEXT.md`](CONTEXT.md). Use-o ao escrever UI ou docs.
 
-### 📝 Resenha pessoal
+---
 
-Cada livro pode receber uma resenha, transformando a coleção em algo mais do que uma lista: ela vira um registro de sentimentos, reflexões e memórias.
+## Funcionalidades
 
-### 🖼️ Upload de foto da capa
+- **Catálogo e status** — Minha biblioteca (catálogo completo), Quero comprar, Lendo, Lido, Abandonei
+- **Busca** — filtro por título ou autor (acentos ignorados)
+- **Avaliação** — quatro categorias (Enredo, Personagens, Edição, Final) em Lendo/Lido; média com uma casa decimal
+- **Resenha** — texto livre em qualquer status
+- **Progresso** — página atual / total e barra de % apenas em Lendo
+- **Capa** — upload de imagem via multipart
+- **CRUD** — criar, editar, trocar status e excluir
 
-A interface permite anexar uma imagem para representar visualmente o livro e deixar a coleção mais viva.
+---
 
-### 🔄 Edição e remoção
+## Começando
 
-Os registros podem ser atualizados ou removidos sempre que o usuário quiser ajustar a coleção.
+### Pré-requisitos
 
-### 📌 Organização por status de leitura
+- [Node.js](https://nodejs.org/) LTS (recomendado 20+)
+- [PostgreSQL](https://www.postgresql.org/download/) local em execução
+- npm (vem com o Node)
 
-Cada leitura na estante tem um status:
+### 1. Banco de dados
 
-- Minha biblioteca
-- Quero comprar
-- Lendo
-- Lido
-- Abandonei
-
-**Minha biblioteca** (aba) lista todos os livros do banco e inclui busca. No cadastro, “Minha biblioteca” também é o status padrão (possuo, ainda não li). Notas ficam disponíveis em Lendo e Lido; a resenha permanece livre em qualquer status. Em Lendo, dá para registrar página atual e total e ver a barra de progresso.
-
-## 🧠 Como o fluxo funciona
-
-O fluxo de dados do Lbook segue uma lógica simples e organizada:
-
-```text
-Usuário → Frontend (React + Vite) → API (Express) → Banco de dados (PostgreSQL)
-```
-
-### Passo a passo
-
-1. O usuário preenche o formulário no frontend.
-2. O React captura os dados e envia uma requisição para a API.
-3. O backend, em Node.js + Express, recebe os dados e processa o upload da imagem quando houver.
-4. O PostgreSQL armazena as informações do livro.
-5. A API retorna os dados cadastrados, e o frontend atualiza a lista exibida para o usuário.
-
-## 🔧 Papel de cada tecnologia
-
-- React: responsável pela interface e pela experiência interativa do usuário.
-- Vite: fornece uma execução rápida do frontend e um ambiente de desenvolvimento ágil.
-- Express: organiza a API REST que recebe, processa e responde às requisições.
-- Multer: cuida do upload de arquivos, como a foto da capa do livro.
-- PostgreSQL: armazena os dados de forma estruturada e confiável.
-- CORS: permite a comunicação segura entre frontend e backend em ambientes locais.
-
-## 🗺️ Fluxograma do fluxo de dados
-
-```mermaid
-flowchart TD
-    A[Usuário preenche formulário] --> B[Frontend React + Vite]
-    B --> C[Handle de envio de dados]
-    C --> D[API Express]
-    D --> E[Validação e processamento]
-    E --> F[Multer faz upload da imagem]
-    E --> G[Dados do livro enviados ao banco]
-    F --> H[Arquivo salvo na pasta uploads]
-    G --> I[PostgreSQL armazena os registros]
-    I --> J[API retorna os dados]
-    J --> K[Frontend atualiza a lista]
-    K --> L[Usuário visualiza o livro cadastrado]
-```
-
-## 🛣️ Próximas features previstas
-
-As próximas etapas de desenvolvimento foram planejadas para expandir o valor do projeto de forma natural:
-
-### 1. Busca e filtros
-
-Permitir encontrar livros por título, autor, categoria ou nota.
-
-### 2. Ranking e favoritos
-
-Criar uma área para destacar os livros mais amados, mais bem avaliados ou mais memoráveis.
-
-### 3. Autenticação de usuário
-
-Permitir que cada pessoa tenha sua própria coleção e seus registros privados.
-
-### 4. Histórico de leituras
-
-Registrar datas de leitura, progresso e evolução da avaliação ao longo do tempo.
-
-### 5. Painel de estatísticas
-
-Mostrar métricas como:
-
-- total de livros cadastrados,
-- média geral das avaliações,
-- categorias mais bem avaliadas,
-- livros mais recentes.
-
-### 6. Melhorias na experiência visual
-
-Refinar ainda mais a interface com temas, animações e uma identidade visual mais forte.
-
-## 🧱 Arquitetura proposta para o próximo ciclo
-
-No próximo estágio, o sistema pode evoluir para uma estrutura ainda mais organizada:
-
-- Frontend refinado com componentes reutilizáveis e melhor performance.
-- Backend com serviços separados para livros, uploads e autenticação.
-- Banco de dados mais preparado para consultas avançadas e relatórios.
-- Possível integração com armazenamento em nuvem para imagens.
-
-## 🛠️ Tecnologias utilizadas
-
-- React
-- Vite
-- Express
-- PostgreSQL
-- Multer
-- CORS
-
-## ▶️ Como rodar localmente
-
-### 1. PostgreSQL local
-
-1. Deixe o serviço do PostgreSQL rodando.
-2. No pgAdmin, abra o Query Tool no servidor local e rode:
+No PostgreSQL, crie o database:
 
 ```sql
 CREATE DATABASE lbook;
 ```
 
-3. Copie o exemplo de env e preencha a senha que você definiu na instalação:
+### 2. Clone e instale
+
+```bash
+git clone https://github.com/adryan1-dev/lbook.git
+cd lbook
+npm install
+```
+
+### 3. Variáveis de ambiente
 
 ```bash
 cp server/.env.example server/.env
@@ -171,30 +91,166 @@ Edite `server/.env`:
 DATABASE_URL=postgresql://postgres:SUA_SENHA@localhost:5432/lbook
 ```
 
-A tabela `books` é criada automaticamente no boot do server (`ensureSchema`).
+Opcional:
 
-### 2. Instale as dependências
-
-```bash
-npm install
+```env
+PORT=3000
 ```
 
-### 3. Inicie o projeto
+Se a API não estiver em `:3000`, alinhe o proxy do Vite:
+
+```env
+VITE_API_TARGET=http://localhost:PORTA
+```
+
+> [!IMPORTANT]
+> Client e server precisam apontar para a **mesma** porta da API. Se `:3000` estiver ocupada, o server encerra com erro (não muda de porta sozinho), para o proxy do Vite não ficar “cego”.
+
+### 4. Suba o app
+
+Na raiz do monorepo:
 
 ```bash
 npm run dev
 ```
 
-Isso sobe o frontend e o backend juntos. Sem `DATABASE_URL`, o server encerra com erro claro.
+Isso sobe:
 
-## 📁 Estrutura do projeto
+- API em `http://localhost:3000` (schema criado/atualizado no boot)
+- UI em `http://localhost:5173`
+
+Abra o Vite no navegador e use a Estante.
+
+### Scripts úteis
+
+| Comando | Onde | O que faz |
+| --- | --- | --- |
+| `npm run dev` | raiz | Client + server juntos |
+| `npm run dev -w lbook-client` | client | Só Vite |
+| `npm run build -w lbook-client` | client | Build de produção |
+| `npm run dev -w lbook-server` | server | API com `--watch` |
+
+Há também `server/src/init-db.js` para preparar a tabela `books` de forma avulsa, se preferir não depender só do `ensureSchema` do server.
+
+---
+
+## Arquitetura
 
 ```text
-client/      # interface em React
-server/      # API em Express
-package.json # scripts do workspace
+Browser (React + Vite :5173)
+        │  /api/*  /uploads/*
+        ▼
+   Vite proxy
+        │
+        ▼
+Express API (:3000) ── Multer ──► server/uploads/
+        │
+        ▼
+   PostgreSQL (books)
 ```
 
-## 🌟 Resumo do projeto
+```mermaid
+flowchart LR
+  User[Usuário] --> UI[React_Vite]
+  UI -->|FormData_CRUD| API[Express]
+  API -->|capa| Disk[uploads]
+  API -->|SQL| DB[(PostgreSQL)]
+  API -->|JSON| UI
+```
 
-O Lbook representa uma ideia simples, mas poderosa: transformar o hábito de registrar leituras em uma experiência organizada, bonita e significativa. O projeto já tem uma base funcional e está preparado para crescer em direção a um produto mais completo, inteligente e envolvente.
+### Fluxo de uma Leitura
+
+1. Na Estante, o usuário abre **Adicionar à estante** (status padrão: Minha biblioteca).
+2. O client envia `multipart/form-data` (`title`, `author`, `status`, notas, `review`, opcionalmente `image`, e em Lendo `current_page` / `total_pages`).
+3. A API valida o status, aplica regras de notas (só persiste novas notas em `lendo` / `lido`) e grava em `books`.
+4. O client recarrega a lista; **Minha biblioteca** mostra o catálogo completo com badge de status.
+5. Em **Lendo**, a barra de progresso usa `current_page / total_pages`.
+
+### Regras de negócio (resumo)
+
+| Regra | Comportamento |
+| --- | --- |
+| Status válidos | `biblioteca`, `quero_comprar`, `lendo`, `lido`, `abandonei` |
+| Notas | Editáveis em Lendo e Lido; ao sair desses status, valores existentes são preservados |
+| Progresso | Só na UI de Lendo; páginas persistidas no banco |
+| Aba Minha biblioteca | `all` — todas as linhas de `books` |
+| Status Minha biblioteca | `biblioteca` — default no create (“possuo, ainda não li”) |
+
+---
+
+## API
+
+Base: `http://localhost:3000` (via proxy, use `/api/...` no browser).
+
+| Método | Rota | Descrição |
+| --- | --- | --- |
+| `GET` | `/api/books` | Lista leituras (`ORDER BY id DESC`) |
+| `POST` | `/api/books` | Cria (multipart: `image` opcional) |
+| `PUT` | `/api/books/:id` | Atualiza |
+| `DELETE` | `/api/books/:id` | Remove (`204`) |
+
+Campos principais do body (form fields): `title`, `author`, `status`, `story`, `characters`, `edition`, `final`, `review`, `current_page`, `total_pages`.
+
+Arquivos estáticos: `GET /uploads/<arquivo>`.
+
+---
+
+## Estrutura do projeto
+
+```text
+lbook/
+├── client/                 # React + Vite + Tailwind
+│   └── src/
+│       ├── components/     # Estante, cards, modais, abas, busca, progresso
+│       └── lib/            # api.js, readings.js (domínio da UI)
+├── server/                 # Express + pg + multer
+│   ├── src/
+│   │   ├── server.js       # API + ensureSchema
+│   │   └── init-db.js      # Bootstrap opcional do schema
+│   ├── uploads/            # Capas enviadas
+│   └── .env.example
+├── CONTEXT.md              # Glossário do produto
+└── package.json            # workspaces + npm run dev
+```
+
+---
+
+## Glossário
+
+Termos estáveis da interface:
+
+| Termo | Significado |
+| --- | --- |
+| **Leitura** | Unidade da Estante (card) |
+| **Estante** | Tela principal / conjunto de Leituras |
+| **Minha biblioteca** | Aba = catálogo todo; no form = status “possuo / ainda não li” |
+| **Edição** | Categoria de nota do objeto físico (não o ato de editar) |
+| **Média da leitura** | Média das quatro notas (`final_rating`) |
+
+Detalhes e palavras a evitar: [`CONTEXT.md`](CONTEXT.md).
+
+---
+
+## Troubleshooting
+
+> [!NOTE]
+> A maioria dos problemas locais vem de `DATABASE_URL` ausente ou porta da API desalinhada do proxy Vite.
+
+| Sintoma | O que checar |
+| --- | --- |
+| “Backend offline” / estante não carrega | `npm run dev` na raiz; `server/.env` com `DATABASE_URL` |
+| Erro ao preparar o banco | PostgreSQL no ar; database `lbook` criado; senha correta na URL |
+| Porta ocupada | Liberar `:3000` ou definir `PORT` e o mesmo valor em `VITE_API_TARGET` |
+| Capa não aparece | Confirme proxy `/uploads` e que o arquivo existe em `server/uploads` |
+
+---
+
+## Próximos passos (visão)
+
+Ideias alinhadas ao roadmap do produto (ainda não implementadas):
+
+- Busca/filtros avançados (nota, autor, etc.)
+- Ranking / favoritos
+- Autenticação e estantes por usuário
+- Histórico de datas e evolução de notas
+- Painel de estatísticas
