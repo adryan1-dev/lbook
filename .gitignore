@@ -9,4 +9,3 @@ server/uploads/
 *.lock
 !package-lock.json
 skills-lock.json
-docs/
