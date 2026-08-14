@@ -32,6 +32,24 @@ async function request(path, options) {
   return response;
 }
 
+export function readingToFormData(reading, { status, cover } = {}) {
+  const payload = new FormData();
+  payload.append("title", reading.title);
+  payload.append("author", reading.author);
+  payload.append("review", reading.review ?? "");
+  payload.append("status", status ?? reading.status);
+  payload.append("story", reading.ratings?.story ?? 0);
+  payload.append("characters", reading.ratings?.characters ?? 0);
+  payload.append("edition", reading.ratings?.edition ?? 0);
+  payload.append("final", reading.ratings?.final ?? 0);
+  payload.append("current_page", reading.currentPage ?? 0);
+  payload.append("total_pages", reading.totalPages ?? 0);
+  if (cover) {
+    payload.append("image", cover);
+  }
+  return payload;
+}
+
 export async function listReadings() {
   const response = await request("/api/books");
   const books = await response.json();

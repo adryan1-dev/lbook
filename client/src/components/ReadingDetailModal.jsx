@@ -1,7 +1,17 @@
-import { useId } from "react";
-import { RATING_CATEGORIES, averageOf } from "../lib/readings";
+import { useId, useState } from "react";
+import {
+  RATING_CATEGORIES,
+  READING_STATUSES,
+  averageOf,
+  statusAllowsRatings,
+  statusShowsProgress,
+} from "../lib/readings";
 import Modal from "./Modal";
+import ReadingProgress from "./ReadingProgress";
 import StarIcon from "./StarIcon";
+
+const fieldClassName =
+  "w-full rounded-xl border border-mist-200 bg-mist-50 px-3 py-2.5 text-ink-900 transition duration-150 ease-out focus:border-mist-500 focus:bg-white focus:outline-none focus:ring-3 focus:ring-mist-400/35";
 
 function RatingRow({ label, value }) {
   return (
@@ -23,9 +33,36 @@ function RatingRow({ label, value }) {
   );
 }
 
-function ReadingDetailModal({ reading, onEdit, onDelete, onClose }) {
+function ReadingDetailModal({
+  reading,
+  onEdit,
+  onDelete,
+  onStatusChange,
+  onClose,
+}) {
   const titleId = useId();
   const average = averageOf(reading.ratings);
+  const showRatings = statusAllowsRatings(reading.status);
+  const showProgress = statusShowsProgress(reading.status);
+  const [savingStatus, setSavingStatus] = useState(false);
+  const [statusError, setStatusError] = useState("");
+
+  const handleStatusChange = async (event) => {
+    const nextStatus = event.target.value;
+    if (nextStatus === reading.status) {
+      return;
+    }
+
+    setSavingStatus(true);
+    setStatusError("");
+    try {
+      await onStatusChange(reading, nextStatus);
+    } catch (error) {
+      setStatusError(error.message);
+    } finally {
+      setSavingStatus(false);
+    }
+  };
 
   return (
     <Modal
@@ -56,6 +93,48 @@ function ReadingDetailModal({ reading, onEdit, onDelete, onClose }) {
         </button>
       </div>
 
+      <label className="mt-4 flex max-w-xs flex-col gap-1.5">
+        <span className="text-sm font-semibold text-ink-700">Status</span>
+        <select
+          value={reading.status}
+          onChange={handleStatusChange}
+          disabled={savingStatus}
+          className={fieldClassName}
+        >
+          {READING_STATUSES.map((item) => (
+            <option key={item.value} value={item.value}>
+              {item.label}
+            </option>
+          ))}
+        </select>
+        {savingStatus ? (
+          <span className="text-xs text-ink-500">Salvando status…</span>
+        ) : null}
+        {statusError ? (
+          <span role="alert" className="text-xs text-berry-600">
+            {statusError}
+          </span>
+        ) : null}
+      </label>
+
+      {showProgress ? (
+        <div className="mt-4 max-w-md">
+          <h3 className="font-display text-sm font-semibold tracking-wide text-ink-500 uppercase">
+            Progresso
+          </h3>
+          {reading.totalPages > 0 ? (
+            <ReadingProgress
+              currentPage={reading.currentPage}
+              totalPages={reading.totalPages}
+            />
+          ) : (
+            <p className="mt-2 text-sm text-ink-500">
+              Edite a leitura para informar página atual e total.
+            </p>
+          )}
+        </div>
+      ) : null}
+
       <div className="mt-5 gap-6 sm:flex">
         <div className="mx-auto w-40 shrink-0 sm:mx-0">
           <div className="relative overflow-hidden rounded-l-[2px] rounded-r-md bg-mist-100 shadow-cover">
@@ -81,29 +160,39 @@ function ReadingDetailModal({ reading, onEdit, onDelete, onClose }) {
             />
           </div>
 
-          <p className="mt-3 flex items-baseline justify-center gap-1.5 sm:justify-start">
-            <span className="font-display text-2xl font-semibold tabular-nums">
-              {average ?? "—"}
-            </span>
-            <span className="text-xs text-ink-500">
-              {average ? "de média" : "faltam notas"}
-            </span>
-          </p>
+          {showRatings ? (
+            <p className="mt-3 flex items-baseline justify-center gap-1.5 sm:justify-start">
+              <span className="font-display text-2xl font-semibold tabular-nums">
+                {average ?? "—"}
+              </span>
+              <span className="text-xs text-ink-500">
+                {average ? "de média" : "faltam notas"}
+              </span>
+            </p>
+          ) : null}
         </div>
 
         <div className="mt-6 min-w-0 flex-1 sm:mt-0">
-          <h3 className="font-display text-sm font-semibold tracking-wide text-ink-500 uppercase">
-            Notas
-          </h3>
-          <ul className="mt-1">
-            {RATING_CATEGORIES.map((category) => (
-              <RatingRow
-                key={category.key}
-                label={category.label}
-                value={reading.ratings[category.key]}
-              />
-            ))}
-          </ul>
+          {showRatings ? (
+            <>
+              <h3 className="font-display text-sm font-semibold tracking-wide text-ink-500 uppercase">
+                Notas
+              </h3>
+              <ul className="mt-1">
+                {RATING_CATEGORIES.map((category) => (
+                  <RatingRow
+                    key={category.key}
+                    label={category.label}
+                    value={reading.ratings[category.key]}
+                  />
+                ))}
+              </ul>
+            </>
+          ) : (
+            <p className="rounded-2xl bg-mist-100 px-4 py-3 text-sm text-ink-500">
+              Notas aparecem quando o status for Lendo ou Lido.
+            </p>
+          )}
 
           <h3 className="mt-6 font-display text-sm font-semibold tracking-wide text-ink-500 uppercase">
             Resenha
