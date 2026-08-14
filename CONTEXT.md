@@ -3,6 +3,22 @@
 Glossário do projeto. Só vocabulário: o que cada termo **é**, e as palavras que deixamos de usar.
 Detalhe de implementação e spec não moram aqui.
 
+## Demo
+
+A versão pública do Lbook (GitHub Pages): mesma Estante e mesma interface, sem login.
+Cada visitante mantém a própria Estante no navegador — os dados não são compartilhados entre pessoas.
+Na primeira visita, o app pode mostrar leituras de exemplo para explorar o produto.
+
+_Avoid_: chamar o demo de “versão beta”, “staging” ou “produção full stack”.
+
+## Desenvolvimento
+
+O modo local com `npm run dev`: client + API + PostgreSQL. É onde a persistência
+server-side e futuras features (login, estante por usuário) são construídas.
+Não é a URL pública do portfólio.
+
+_Avoid_: tratar `npm run dev` como sinônimo do demo público.
+
 ## Leitura
 
 Registro pessoal de uma obra na Estante: título, autor, capa, status de leitura,
@@ -14,7 +30,7 @@ _Avoid_: Livro (como item da lista), registro, entrada.
 
 ## Minha biblioteca
 
-Aba do catálogo completo: todas as Leituras do banco, com busca por título ou autor.
+Aba do catálogo completo: todas as Leituras persistidas, com busca por título ou autor.
 No formulário, “Minha biblioteca” também é o status padrão ao cadastrar o que você
 já possui e ainda não leu.
 
@@ -68,3 +84,10 @@ _Avoid_: "nota geral" como sinônimo de qualquer categoria isolada.
 A média aritmética das quatro categorias, com uma casa decimal. Persistida como `final_rating`.
 
 _Avoid_: nota final (colide com a categoria Final).
+
+## Dados só neste navegador
+
+Aviso discreto no header do **Demo**: deixa claro que a Estante vive apenas
+no navegador daquele visitante. Não aparece no modo Desenvolvimento.
+
+_Avoid_: “modo offline”, “sem servidor” como título; “localStorage” na UI.

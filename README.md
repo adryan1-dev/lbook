@@ -23,7 +23,14 @@ A URL pública é o frontend estático no GitHub Pages. Cada visitante tem a pr�
 
 `npm run dev` **não** usa esse modo: client e server falam com PostgreSQL, como antes.
 
-O deploy roda em push para a branch `demo/local-pages` (`.github/workflows/deploy.yml`). Na primeira vez, em **Settings → Pages → Source**, escolha **GitHub Actions**. O `main` permanece com Express + PostgreSQL.
+Um único `main` compartilha UI e componentes; a persistência muda no build:
+
+| Modo | Como | Persistência |
+| --- | --- | --- |
+| Desenvolvimento | `npm run dev` | Express + PostgreSQL (`client/src/lib/api.js`) |
+| Demo público | GitHub Pages (push em `main`) | `localStorage` (`VITE_DATA_SOURCE=local`) |
+
+O deploy do demo roda em push para `main` (`.github/workflows/deploy.yml`). Na primeira vez, em **Settings → Pages → Source**, escolha **GitHub Actions**.
 
 ---
 
