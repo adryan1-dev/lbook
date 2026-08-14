@@ -3,19 +3,25 @@ import {
   createReading,
   deleteReading,
   listReadings,
+  readingToFormData,
   updateReading,
 } from "./lib/api";
+import { countByStatus, filterBySearch, labelOfStatus } from "./lib/readings";
 import ConfirmDialog from "./components/ConfirmDialog";
 import Header from "./components/Header";
 import ReadingDetailModal from "./components/ReadingDetailModal";
 import ReadingFormModal from "./components/ReadingFormModal";
+import SearchBar from "./components/SearchBar";
 import Shelf from "./components/Shelf";
+import StatusTabs from "./components/StatusTabs";
 
 function App() {
   const [readings, setReadings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState("");
   const [feedback, setFeedback] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const [selectedId, setSelectedId] = useState(null);
   const [formTarget, setFormTarget] = useState(null);
@@ -23,6 +29,13 @@ function App() {
   const [deleting, setDeleting] = useState(false);
 
   const selectedReading = readings.find((item) => item.id === selectedId);
+  const statusCounts = countByStatus(readings);
+  const hasSearch = Boolean(searchQuery.trim());
+  const byStatus =
+    statusFilter === "all"
+      ? readings
+      : readings.filter((item) => item.status === statusFilter);
+  const visibleReadings = filterBySearch(byStatus, searchQuery);
 
   const loadShelf = useCallback(async () => {
     setLoading(true);
@@ -56,11 +69,22 @@ function App() {
       setFeedback(`“${editing.title}” foi atualizado.`);
     } else {
       await createReading(payload);
-      setFeedback("Leitura registrada na sua estante.");
+      setFeedback("Leitura adicionada à estante.");
     }
 
     setFormTarget(null);
     setSelectedId(null);
+    await loadShelf();
+  };
+
+  const handleStatusChange = async (reading, nextStatus) => {
+    await updateReading(
+      reading.id,
+      readingToFormData(reading, { status: nextStatus }),
+    );
+    setFeedback(
+      `“${reading.title}” agora está em ${labelOfStatus(nextStatus)}.`,
+    );
     await loadShelf();
   };
 
@@ -132,11 +156,27 @@ function App() {
             </button>
           </div>
         ) : (
-          <Shelf
-            readings={readings}
-            onOpenReading={(reading) => setSelectedId(reading.id)}
-            onNewReading={() => setFormTarget({ reading: null })}
-          />
+          <div className="flex flex-col gap-6">
+            {readings.length > 0 ? (
+              <>
+                <SearchBar value={searchQuery} onChange={setSearchQuery} />
+                <StatusTabs
+                  active={statusFilter}
+                  counts={statusCounts}
+                  onChange={setStatusFilter}
+                />
+              </>
+            ) : null}
+
+            <Shelf
+              readings={visibleReadings}
+              statusFilter={statusFilter}
+              hasSearch={hasSearch}
+              showStatusBadge={statusFilter === "all"}
+              onOpenReading={(reading) => setSelectedId(reading.id)}
+              onNewReading={() => setFormTarget({ reading: null })}
+            />
+          </div>
         )}
       </main>
 
@@ -148,6 +188,7 @@ function App() {
             setFormTarget({ reading });
           }}
           onDelete={(reading) => setPendingDelete(reading)}
+          onStatusChange={handleStatusChange}
           onClose={() => setSelectedId(null)}
         />
       ) : null}

@@ -21,7 +21,7 @@ function Header({ count, onNewReading }) {
           onClick={onNewReading}
           className="ml-auto shrink-0 rounded-full bg-mist-700 px-4 py-2.5 text-sm font-semibold text-white transition duration-150 ease-out hover:bg-mist-600 active:scale-97"
         >
-          Nova leitura
+          Adicionar à estante
         </button>
       </div>
     </header>

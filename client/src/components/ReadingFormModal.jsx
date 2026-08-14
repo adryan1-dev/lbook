@@ -1,7 +1,17 @@
 import { useEffect, useId, useRef, useState } from "react";
-import { RATING_CATEGORIES, averageOf, emptyRatings } from "../lib/readings";
+import {
+  DEFAULT_STATUS,
+  RATING_CATEGORIES,
+  READING_STATUSES,
+  averageOf,
+  emptyRatings,
+  progressPercent,
+  statusAllowsRatings,
+  statusShowsProgress,
+} from "../lib/readings";
 import ConfirmDialog from "./ConfirmDialog";
 import Modal from "./Modal";
+import ReadingProgress from "./ReadingProgress";
 import StarRating from "./StarRating";
 
 const fieldClassName =
@@ -15,6 +25,13 @@ function ReadingFormModal({ reading, onSubmit, onClose }) {
   const [title, setTitle] = useState(reading?.title ?? "");
   const [author, setAuthor] = useState(reading?.author ?? "");
   const [review, setReview] = useState(reading?.review ?? "");
+  const [status, setStatus] = useState(reading?.status ?? DEFAULT_STATUS);
+  const [currentPage, setCurrentPage] = useState(
+    String(reading?.currentPage ?? 0),
+  );
+  const [totalPages, setTotalPages] = useState(
+    String(reading?.totalPages ?? 0),
+  );
   const [ratings, setRatings] = useState(reading?.ratings ?? emptyRatings);
   const [cover, setCover] = useState(null);
   const [saving, setSaving] = useState(false);
@@ -22,12 +39,21 @@ function ReadingFormModal({ reading, onSubmit, onClose }) {
   const [confirmingDiscard, setConfirmingDiscard] = useState(false);
   const errorRef = useRef(null);
 
+  const allowsRatings = statusAllowsRatings(status);
+  const showsProgress = statusShowsProgress(status);
   const average = averageOf(ratings);
+  const previewPercent = progressPercent(
+    Number(currentPage) || 0,
+    Number(totalPages) || 0,
+  );
 
   const isDirty =
     title !== (reading?.title ?? "") ||
     author !== (reading?.author ?? "") ||
     review !== (reading?.review ?? "") ||
+    status !== (reading?.status ?? DEFAULT_STATUS) ||
+    Number(currentPage) !== (reading?.currentPage ?? 0) ||
+    Number(totalPages) !== (reading?.totalPages ?? 0) ||
     cover !== null ||
     RATING_CATEGORIES.some((category) => {
       return ratings[category.key] !== (reading?.ratings?.[category.key] ?? 0);
@@ -56,10 +82,22 @@ function ReadingFormModal({ reading, onSubmit, onClose }) {
     setSaving(true);
     setError("");
 
+    const parsedCurrent = Math.max(0, Math.floor(Number(currentPage) || 0));
+    const parsedTotal = Math.max(0, Math.floor(Number(totalPages) || 0));
+
+    if (showsProgress && parsedTotal > 0 && parsedCurrent > parsedTotal) {
+      setError("A página atual não pode passar do total de páginas.");
+      setSaving(false);
+      return;
+    }
+
     const payload = new FormData();
     payload.append("title", title.trim());
     payload.append("author", author.trim());
     payload.append("review", review.trim());
+    payload.append("status", status);
+    payload.append("current_page", parsedCurrent);
+    payload.append("total_pages", parsedTotal);
     for (const category of RATING_CATEGORIES) {
       payload.append(category.key, ratings[category.key]);
     }
@@ -87,7 +125,7 @@ function ReadingFormModal({ reading, onSubmit, onClose }) {
             id={titleId}
             className="flex-1 font-display text-xl/tight font-semibold"
           >
-            {isEditing ? "Editar leitura" : "Nova leitura"}
+            {isEditing ? "Editar leitura" : "Adicionar à estante"}
           </h2>
 
           <button
@@ -128,6 +166,67 @@ function ReadingFormModal({ reading, onSubmit, onClose }) {
           </label>
 
           <label className="flex flex-col gap-1.5">
+            <span className="text-sm font-semibold text-ink-700">Status</span>
+            <select
+              name="status"
+              value={status}
+              onChange={(event) => setStatus(event.target.value)}
+              className={fieldClassName}
+            >
+              {READING_STATUSES.map((item) => (
+                <option key={item.value} value={item.value}>
+                  {item.label}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          {showsProgress ? (
+            <div className="grid grid-cols-2 gap-3">
+              <label className="flex flex-col gap-1.5">
+                <span className="text-sm font-semibold text-ink-700">
+                  Página atual
+                </span>
+                <input
+                  type="number"
+                  name="current_page"
+                  min="0"
+                  inputMode="numeric"
+                  value={currentPage}
+                  onChange={(event) => setCurrentPage(event.target.value)}
+                  className={fieldClassName}
+                />
+              </label>
+              <label className="flex flex-col gap-1.5">
+                <span className="text-sm font-semibold text-ink-700">
+                  Total de páginas
+                </span>
+                <input
+                  type="number"
+                  name="total_pages"
+                  min="0"
+                  inputMode="numeric"
+                  value={totalPages}
+                  onChange={(event) => setTotalPages(event.target.value)}
+                  className={fieldClassName}
+                />
+              </label>
+              {previewPercent !== null ? (
+                <div className="col-span-2">
+                  <ReadingProgress
+                    currentPage={Number(currentPage) || 0}
+                    totalPages={Number(totalPages) || 0}
+                  />
+                </div>
+              ) : (
+                <p className="col-span-2 text-xs text-ink-500">
+                  Informe o total de páginas para ver o progresso.
+                </p>
+              )}
+            </div>
+          ) : null}
+
+          <label className="flex flex-col gap-1.5">
             <span className="text-sm font-semibold text-ink-700">
               Foto da capa
             </span>
@@ -144,26 +243,34 @@ function ReadingFormModal({ reading, onSubmit, onClose }) {
             ) : null}
           </label>
 
-          <div className="flex flex-col gap-2">
-            {RATING_CATEGORIES.map((category) => (
-              <StarRating
-                key={category.key}
-                label={category.label}
-                hint={category.hint}
-                value={ratings[category.key]}
-                onChange={(value) => handleRatingChange(category.key, value)}
-              />
-            ))}
-          </div>
+          {allowsRatings ? (
+            <>
+              <div className="flex flex-col gap-2">
+                {RATING_CATEGORIES.map((category) => (
+                  <StarRating
+                    key={category.key}
+                    label={category.label}
+                    hint={category.hint}
+                    value={ratings[category.key]}
+                    onChange={(value) => handleRatingChange(category.key, value)}
+                  />
+                ))}
+              </div>
 
-          <p className="flex items-center justify-between rounded-2xl bg-blush-100 px-4 py-3">
-            <span className="text-sm font-semibold text-ink-700">
-              Média da leitura
-            </span>
-            <span className="font-display text-lg font-semibold tabular-nums">
-              {average ?? "—"}
-            </span>
-          </p>
+              <p className="flex items-center justify-between rounded-2xl bg-blush-100 px-4 py-3">
+                <span className="text-sm font-semibold text-ink-700">
+                  Média da leitura
+                </span>
+                <span className="font-display text-lg font-semibold tabular-nums">
+                  {average ?? "—"}
+                </span>
+              </p>
+            </>
+          ) : (
+            <p className="rounded-2xl bg-mist-100 px-4 py-3 text-sm text-ink-500">
+              Notas ficam disponíveis quando o status for Lendo ou Lido.
+            </p>
+          )}
 
           <label className="flex flex-col gap-1.5">
             <span className="text-sm font-semibold text-ink-700">Resenha</span>
@@ -205,7 +312,7 @@ function ReadingFormModal({ reading, onSubmit, onClose }) {
                 ? "Salvando…"
                 : isEditing
                   ? "Salvar alterações"
-                  : "Salvar leitura"}
+                  : "Salvar na estante"}
             </button>
           </div>
         </form>

@@ -43,6 +43,18 @@ A interface permite anexar uma imagem para representar visualmente o livro e dei
 
 Os registros podem ser atualizados ou removidos sempre que o usuário quiser ajustar a coleção.
 
+### 📌 Organização por status de leitura
+
+Cada leitura na estante tem um status:
+
+- Minha biblioteca
+- Quero comprar
+- Lendo
+- Lido
+- Abandonei
+
+**Minha biblioteca** (aba) lista todos os livros do banco e inclui busca. No cadastro, “Minha biblioteca” também é o status padrão (possuo, ainda não li). Notas ficam disponíveis em Lendo e Lido; a resenha permanece livre em qualquer status. Em Lendo, dá para registrar página atual e total e ver a barra de progresso.
+
 ## 🧠 Como o fluxo funciona
 
 O fluxo de dados do Lbook segue uma lógica simples e organizada:
@@ -93,28 +105,19 @@ As próximas etapas de desenvolvimento foram planejadas para expandir o valor do
 
 Permitir encontrar livros por título, autor, categoria ou nota.
 
-### 2. Organização por status de leitura
-
-Adicionar estados como:
-
-- Quero ler
-- Lendo
-- Lido
-- Abandonei
-
-### 3. Ranking e favoritos
+### 2. Ranking e favoritos
 
 Criar uma área para destacar os livros mais amados, mais bem avaliados ou mais memoráveis.
 
-### 4. Autenticação de usuário
+### 3. Autenticação de usuário
 
 Permitir que cada pessoa tenha sua própria coleção e seus registros privados.
 
-### 5. Histórico de leituras
+### 4. Histórico de leituras
 
 Registrar datas de leitura, progresso e evolução da avaliação ao longo do tempo.
 
-### 6. Painel de estatísticas
+### 5. Painel de estatísticas
 
 Mostrar métricas como:
 
@@ -123,7 +126,7 @@ Mostrar métricas como:
 - categorias mais bem avaliadas,
 - livros mais recentes.
 
-### 7. Melhorias na experiência visual
+### 6. Melhorias na experiência visual
 
 Refinar ainda mais a interface com temas, animações e uma identidade visual mais forte.
 

@@ -32,6 +32,9 @@ async function initDatabase() {
       final_score INTEGER DEFAULT 0,
       review TEXT,
       final_rating VARCHAR(10) DEFAULT '0.0',
+      status VARCHAR(20) NOT NULL DEFAULT 'biblioteca',
+      current_page INTEGER DEFAULT 0,
+      total_pages INTEGER DEFAULT 0,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
   `);
@@ -46,6 +49,24 @@ async function initDatabase() {
     `ALTER TABLE books ADD COLUMN IF NOT EXISTS final_score INTEGER DEFAULT 0`,
   );
   await pool.query(`ALTER TABLE books ADD COLUMN IF NOT EXISTS review TEXT`);
+  await pool.query(`ALTER TABLE books ADD COLUMN IF NOT EXISTS status VARCHAR(20)`);
+  await pool.query(`UPDATE books SET status = 'lido' WHERE status IS NULL`);
+  await pool.query(
+    `UPDATE books SET status = 'quero_comprar' WHERE status = 'quero_ler'`,
+  );
+  await pool.query(
+    `UPDATE books SET status = 'biblioteca' WHERE status = 'para_ler'`,
+  );
+  await pool.query(
+    `ALTER TABLE books ALTER COLUMN status SET DEFAULT 'biblioteca'`,
+  );
+  await pool.query(`ALTER TABLE books ALTER COLUMN status SET NOT NULL`);
+  await pool.query(
+    `ALTER TABLE books ADD COLUMN IF NOT EXISTS current_page INTEGER DEFAULT 0`,
+  );
+  await pool.query(
+    `ALTER TABLE books ADD COLUMN IF NOT EXISTS total_pages INTEGER DEFAULT 0`,
+  );
 
   console.log("Tabela books pronta.");
   await pool.end();

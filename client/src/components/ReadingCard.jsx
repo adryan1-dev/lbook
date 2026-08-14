@@ -1,4 +1,9 @@
-import { averageOf } from "../lib/readings";
+import {
+  averageOf,
+  labelOfStatus,
+  statusShowsProgress,
+} from "../lib/readings";
+import ReadingProgress from "./ReadingProgress";
 import StarIcon from "./StarIcon";
 
 function initialsOf(title) {
@@ -10,8 +15,9 @@ function initialsOf(title) {
     .join("");
 }
 
-function ReadingCard({ reading, eager = false, onOpen }) {
+function ReadingCard({ reading, showStatusBadge = false, eager = false, onOpen }) {
   const average = averageOf(reading.ratings);
+  const showProgress = statusShowsProgress(reading.status);
 
   return (
     <article className="group relative">
@@ -41,6 +47,12 @@ function ReadingCard({ reading, eager = false, onOpen }) {
           aria-hidden="true"
           className="lb-spine pointer-events-none absolute inset-y-0 left-0 w-1/5"
         />
+
+        {showStatusBadge ? (
+          <span className="absolute top-2 right-2 rounded-full bg-white/95 px-2 py-0.5 text-[10px] font-semibold tracking-wide text-ink-700 uppercase shadow-sm">
+            {labelOfStatus(reading.status)}
+          </span>
+        ) : null}
       </div>
 
       <div className="mt-3">
@@ -57,6 +69,13 @@ function ReadingCard({ reading, eager = false, onOpen }) {
             {average ? "de média" : "sem média: faltam notas"}
           </span>
         </p>
+        {showProgress ? (
+          <ReadingProgress
+            currentPage={reading.currentPage}
+            totalPages={reading.totalPages}
+            compact
+          />
+        ) : null}
       </div>
 
       <button
