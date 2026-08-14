@@ -1,6 +1,8 @@
 import { toReading } from "./readings";
 
 const GENERIC_ERROR = "Não foi possível falar com o servidor.";
+const OFFLINE_ERROR =
+  "Backend offline. Confira se o server subiu no `npm run dev` e se `server/.env` tem DATABASE_URL.";
 
 async function request(path, options) {
   let response;
@@ -8,7 +10,7 @@ async function request(path, options) {
   try {
     response = await fetch(path, options);
   } catch {
-    throw new Error(GENERIC_ERROR);
+    throw new Error(OFFLINE_ERROR);
   }
 
   if (!response.ok) {
@@ -19,7 +21,10 @@ async function request(path, options) {
         message = data.error;
       }
     } catch {
-      // Resposta sem corpo JSON: a mensagem genérica basta.
+      // Proxy do Vite devolve 5xx vazio quando o Express não está escutando.
+      if (response.status >= 500) {
+        message = OFFLINE_ERROR;
+      }
     }
     throw new Error(message);
   }

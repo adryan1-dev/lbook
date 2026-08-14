@@ -147,15 +147,34 @@ No próximo estágio, o sistema pode evoluir para uma estrutura ainda mais organ
 
 ## ▶️ Como rodar localmente
 
-### 1. Instale as dependências
+### 1. PostgreSQL local
+
+1. Deixe o serviço do PostgreSQL rodando.
+2. No pgAdmin, abra o Query Tool no servidor local e rode:
+
+```sql
+CREATE DATABASE lbook;
+```
+
+3. Copie o exemplo de env e preencha a senha que você definiu na instalação:
+
+```bash
+cp server/.env.example server/.env
+```
+
+Edite `server/.env`:
+
+```env
+DATABASE_URL=postgresql://postgres:SUA_SENHA@localhost:5432/lbook
+```
+
+A tabela `books` é criada automaticamente no boot do server (`ensureSchema`).
+
+### 2. Instale as dependências
 
 ```bash
 npm install
 ```
-
-### 2. Configure o PostgreSQL
-
-Crie um banco chamado `lbook` e certifique-se de que o PostgreSQL esteja rodando localmente.
 
 ### 3. Inicie o projeto
 
@@ -163,7 +182,7 @@ Crie um banco chamado `lbook` e certifique-se de que o PostgreSQL esteja rodando
 npm run dev
 ```
 
-Isso sobe o frontend e o backend juntos.
+Isso sobe o frontend e o backend juntos. Sem `DATABASE_URL`, o server encerra com erro claro.
 
 ## 📁 Estrutura do projeto
 

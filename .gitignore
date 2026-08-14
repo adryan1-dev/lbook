@@ -1,9 +1,12 @@
 .env
 .env.*
+!.env.example
 node_modules/
 dist/
 server/uploads/
 .agents/
 .skills/
 *.lock
+!package-lock.json
 skills-lock.json
+docs/

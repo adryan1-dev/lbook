@@ -1,7 +1,22 @@
+import path from "path";
+import { fileURLToPath } from "url";
 import { Pool } from "pg";
+import dotenv from "dotenv";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+dotenv.config({ path: path.join(__dirname, "../.env") });
+
+if (!process.env.DATABASE_URL) {
+  console.error(
+    "Missing DATABASE_URL. Copy server/.env.example to server/.env and set your Postgres URL.",
+  );
+  process.exit(1);
+}
 
 const pool = new Pool({
-  connectionString: "postgresql://postgres:postgres@localhost:5432/lbook",
+  connectionString: process.env.DATABASE_URL,
 });
 
 async function initDatabase() {
