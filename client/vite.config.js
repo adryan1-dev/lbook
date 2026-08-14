@@ -7,6 +7,8 @@ const apiTarget = process.env.VITE_API_TARGET || "http://localhost:3000";
 
 export default defineConfig({
   plugins: [tailwindcss(), react()],
+  // GitHub Pages (repo project): VITE_BASE=/lbook/
+  base: process.env.VITE_BASE || "/",
   server: {
     proxy: {
       "/api": { target: apiTarget, changeOrigin: true },

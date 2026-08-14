@@ -5,7 +5,8 @@ import {
   listReadings,
   readingToFormData,
   updateReading,
-} from "./lib/api";
+  usesLocalData,
+} from "./lib/store";
 import { countByStatus, filterBySearch, labelOfStatus } from "./lib/readings";
 import ConfirmDialog from "./components/ConfirmDialog";
 import Header from "./components/Header";
@@ -115,6 +116,7 @@ function App() {
 
       <Header
         count={readings.length}
+        localDemo={usesLocalData}
         onNewReading={() => setFormTarget({ reading: null })}
       />
 
@@ -145,7 +147,10 @@ function App() {
               A estante não carregou
             </p>
             <p className="mx-auto mt-2 max-w-sm text-sm text-ink-500">
-              {loadError} Verifique se o servidor está rodando e tente de novo.
+              {loadError}
+              {usesLocalData
+                ? ""
+                : " Verifique se o servidor está rodando e tente de novo."}
             </p>
             <button
               type="button"

@@ -11,7 +11,19 @@
 
 Caderno pessoal de leituras: catalogar o que você tem, organizar por status, avaliar, escrever resenhas e acompanhar o progresso — tudo em uma Estante simples.
 
-[Visão geral](#visão-geral) · [Stack](#stack) · [Funcionalidades](#funcionalidades) · [Começando](#começando) · [Arquitetura](#arquitetura) · [API](#api) · [Estrutura](#estrutura-do-projeto) · [Glossário](#glossário)
+**Demo:** [adryan1-dev.github.io/lbook](https://adryan1-dev.github.io/lbook/) — estante no navegador, sem login. A API + PostgreSQL é o modo de desenvolvimento (`npm run dev`).
+
+[Visão geral](#visão-geral) · [Demo](#demo) · [Stack](#stack) · [Funcionalidades](#funcionalidades) · [Começando](#começando) · [Arquitetura](#arquitetura) · [API](#api) · [Estrutura](#estrutura-do-projeto) · [Glossário](#glossário)
+
+---
+
+## Demo
+
+A URL pública é o frontend estático no GitHub Pages. Cada visitante tem a própria Estante no `localStorage` (sem conta, sem banco). Na primeira visita o app popula algumas leituras de exemplo.
+
+`npm run dev` **não** usa esse modo: client e server falam com PostgreSQL, como antes.
+
+O deploy roda em push para a branch `demo/local-pages` (`.github/workflows/deploy.yml`). Na primeira vez, em **Settings → Pages → Source**, escolha **GitHub Actions**. O `main` permanece com Express + PostgreSQL.
 
 ---
 
@@ -204,7 +216,8 @@ lbook/
 ├── client/                 # React + Vite + Tailwind
 │   └── src/
 │       ├── components/     # Estante, cards, modais, abas, busca, progresso
-│       └── lib/            # api.js, readings.js (domínio da UI)
+│       └── lib/            # store.js, api.js, localStore.js, readings.js
+├── .github/workflows/      # GitHub Pages (demo com dados no navegador)
 ├── server/                 # Express + pg + multer
 │   ├── src/
 │   │   ├── server.js       # API + ensureSchema
