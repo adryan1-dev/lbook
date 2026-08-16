@@ -46,23 +46,28 @@ _Avoid_: Livro (como item da lista), registro, entrada.
 
 ## Minha biblioteca
 
-Aba do catálogo completo: todas as Leituras persistidas, com busca por título ou autor.
-No formulário, “Minha biblioteca” também é o status padrão ao cadastrar o que você
-já possui e ainda não leu.
+Status padrão ao cadastrar o que você já possui e ainda não leu. É um vão da
+Estante, no meio do caminho entre “quero comprar” e “lendo”.
 
-_Avoid_: tratar a aba Minha biblioteca como só os não lidos.
+A Estante inteira — todos os vãos — é o catálogo completo, com busca por título
+ou autor.
+
+_Avoid_: tratar o vão Minha biblioteca como o catálogo todo; chamar o catálogo
+de “aba”.
 
 ## Status de leitura
 
 Posição da Leitura na jornada: Minha biblioteca, Quero comprar, Lendo, Lido ou Abandonei.
-Organiza a Estante; não é uma entidade própria.
+Organiza a Estante em vãos; não é uma entidade própria.
 
-_Avoid_: categoria (colide com as categorias de nota), tag, prateleira.
+_Avoid_: categoria (colide com as categorias de nota), tag, prateleira (o vão é
+o espaço da mobília; o status é a posição da Leitura).
 
 ## Estante
 
 O conjunto de Leituras e a tela principal do Lbook. Revisitar a Estante é o trabalho primário
-da interface; cadastrar é secundário. A home abre em Minha biblioteca.
+da interface; cadastrar é secundário. A home abre a Estante inteira, um vão por
+status, com Lendo no vão do meio — à altura da mão.
 No **App**, a Estante pertence à conta logada.
 
 _Avoid_: Coleção, Minha coleção, lista.

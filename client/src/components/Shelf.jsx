@@ -1,73 +1,164 @@
-import { labelOfStatus } from "../lib/readings";
+import { SHELF_BAYS, readingsInBay } from "../lib/readings";
 import ReadingCard from "./ReadingCard";
 
-function emptyCopy(statusFilter, hasSearch) {
-  if (hasSearch) {
-    return {
-      title: "Nenhum resultado",
-      body: "Tente outro título ou autor, ou limpe a busca.",
-      cta: null,
-    };
+function BayIndex({ bays, hasSearch }) {
+  const links = hasSearch ? bays.filter((bay) => bay.items.length > 0) : bays;
+
+  if (links.length === 0) {
+    return null;
   }
 
-  if (statusFilter === "all") {
-    return {
-      title: "Sua biblioteca ainda está vazia",
-      body: "Cadastre o primeiro livro para organizar o catálogo e responder “você tem esse?”.",
-      cta: "Adicionar à estante",
-    };
-  }
-
-  return {
-    title: `Nada em “${labelOfStatus(statusFilter)}”`,
-    body: "Mude o status de uma leitura ou adicione um novo item à estante.",
-    cta: "Adicionar à estante",
-  };
+  return (
+    <nav
+      aria-label="Vãos da estante"
+      className="flex gap-1 overflow-x-auto pb-1"
+    >
+      {links.map((bay) => (
+        <a
+          key={bay.value}
+          href={`#vao-${bay.value}`}
+          className={`shrink-0 border-b-2 px-2.5 py-1.5 text-sm transition duration-150 ease-out ${
+            bay.featured
+              ? "border-blush-600 font-display font-semibold text-ink-900"
+              : "border-transparent font-semibold text-ink-500 hover:border-mist-400 hover:text-ink-900"
+          }`}
+        >
+          {bay.label}
+          <span className="ml-1.5 font-sans text-xs tabular-nums text-ink-500">
+            {bay.items.length}
+          </span>
+        </a>
+      ))}
+    </nav>
+  );
 }
 
-function Shelf({
-  readings,
-  statusFilter,
-  hasSearch = false,
-  showStatusBadge,
-  onOpenReading,
-  onNewReading,
-}) {
-  if (readings.length === 0) {
-    const copy = emptyCopy(statusFilter, hasSearch);
+function EmptyBay({ bay }) {
+  return (
+    <p className="px-1 pb-3 text-sm text-ink-500">
+      {bay.featured ? "Nada na mão neste vão." : "Nenhum volume neste vão."}
+    </p>
+  );
+}
 
-    return (
-      <div className="rounded-3xl border border-dashed border-mist-300 bg-white/60 px-6 py-16 text-center">
-        <p className="font-display text-lg font-semibold text-ink-900">
-          {copy.title}
+function EmptyCase({ onNewReading }) {
+  return (
+    <div className="lb-case">
+      <div className="lb-case-crown" />
+      <div className="lb-bay lb-bay-lendo px-3 sm:px-4">
+        <p className="font-display text-2xl font-semibold text-ink-900">
+          Sua estante ainda está vazia
         </p>
-        <p className="mx-auto mt-2 max-w-sm text-sm text-ink-500">{copy.body}</p>
-        {copy.cta ? (
-          <button
-            type="button"
-            onClick={onNewReading}
-            className="mt-6 rounded-full bg-mist-700 px-5 py-2.5 text-sm font-semibold text-white transition duration-150 ease-out hover:bg-mist-600 active:scale-97"
+        <p className="mt-2 max-w-md text-sm text-ink-500">
+          Cadastre a primeira leitura. Os vãos — quero comprar, em casa, na
+          mão, lido, abandonei — aparecem sozinhos.
+        </p>
+        <button
+          type="button"
+          onClick={onNewReading}
+          className="mt-5 rounded-full bg-mist-700 px-5 py-2.5 text-sm font-semibold text-white transition duration-150 ease-out hover:bg-mist-600 active:scale-97"
+        >
+          Adicionar à estante
+        </button>
+      </div>
+      <div className="lb-rail" />
+    </div>
+  );
+}
+
+function ShelfBay({ bay, onOpenReading }) {
+  const featured = Boolean(bay.featured);
+  const grid = featured
+    ? "grid-cols-2 gap-x-5 gap-y-8 sm:grid-cols-3 lg:grid-cols-4"
+    : "grid-cols-3 gap-x-3 gap-y-7 sm:grid-cols-4 sm:gap-x-4 lg:grid-cols-6";
+
+  return (
+    <section
+      id={`vao-${bay.value}`}
+      className={`lb-bay ${featured ? "lb-bay-lendo" : ""}`}
+      aria-labelledby={`vao-label-${bay.value}`}
+    >
+      <div className="flex items-baseline justify-between gap-3 px-3 sm:px-4">
+        <div className="min-w-0">
+          <h2
+            id={`vao-label-${bay.value}`}
+            className={`font-display font-semibold text-ink-900 ${
+              featured ? "text-2xl sm:text-3xl" : "text-lg"
+            }`}
           >
-            {copy.cta}
-          </button>
-        ) : null}
+            {bay.label}
+          </h2>
+          <p className="mt-0.5 text-xs text-ink-500">{bay.hint}</p>
+        </div>
+        <p className="shrink-0 font-display text-sm tabular-nums text-ink-500">
+          {bay.items.length}
+        </p>
+      </div>
+
+      <div className="px-3 pt-5 sm:px-4">
+        {bay.items.length === 0 ? (
+          <EmptyBay bay={bay} />
+        ) : (
+          <ul className={`grid ${grid} pr-1`}>
+            {bay.items.map((reading, index) => (
+              <li key={reading.id} className="lb-shelf-item">
+                <ReadingCard
+                  reading={reading}
+                  featured={featured}
+                  eager={featured && index < 4}
+                  onOpen={onOpenReading}
+                />
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+
+      <div className="lb-rail mt-1" />
+    </section>
+  );
+}
+
+function Shelf({ readings, hasSearch = false, onOpenReading, onNewReading }) {
+  if (readings.length === 0 && !hasSearch) {
+    return <EmptyCase onNewReading={onNewReading} />;
+  }
+
+  if (readings.length === 0 && hasSearch) {
+    return (
+      <div className="px-1 py-12 text-center">
+        <p className="font-display text-lg font-semibold text-ink-900">
+          Nenhum resultado
+        </p>
+        <p className="mx-auto mt-2 max-w-sm text-sm text-ink-500">
+          Tente outro título ou autor, ou limpe a busca.
+        </p>
       </div>
     );
   }
 
+  const bays = SHELF_BAYS.map((bay) => ({
+    ...bay,
+    items: readingsInBay(readings, bay.value),
+  }));
+  const visibleBays = hasSearch
+    ? bays.filter((bay) => bay.items.length > 0)
+    : bays;
+
   return (
-    <ul className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-x-6 lg:grid-cols-4 xl:grid-cols-5">
-      {readings.map((reading, index) => (
-        <li key={reading.id} className="lb-shelf-item">
-          <ReadingCard
-            reading={reading}
-            showStatusBadge={showStatusBadge}
-            eager={index < 5}
-            onOpen={onOpenReading}
+    <div>
+      <BayIndex bays={bays} hasSearch={hasSearch} />
+      <div className="lb-case mt-4">
+        <div className="lb-case-crown" />
+        {visibleBays.map((bay) => (
+          <ShelfBay
+            key={bay.value}
+            bay={bay}
+            onOpenReading={onOpenReading}
           />
-        </li>
-      ))}
-    </ul>
+        ))}
+      </div>
+    </div>
   );
 }
 

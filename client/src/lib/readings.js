@@ -29,6 +29,36 @@ export const READING_STATUSES = [
   { value: "abandonei", label: "Abandonei" },
 ];
 
+/** Ordem espacial da Estante. Lendo fica no vão do meio, à altura da mão. */
+export const SHELF_BAYS = [
+  {
+    value: "quero_comprar",
+    label: "Quero comprar",
+    hint: "Ainda não está em casa",
+  },
+  {
+    value: "biblioteca",
+    label: "Minha biblioteca",
+    hint: "Em casa, ainda não li",
+  },
+  {
+    value: "lendo",
+    label: "Lendo",
+    hint: "Na mão",
+    featured: true,
+  },
+  {
+    value: "lido",
+    label: "Lido",
+    hint: "Já passou por aqui",
+  },
+  {
+    value: "abandonei",
+    label: "Abandonei",
+    hint: "Ficou pelo caminho",
+  },
+];
+
 export const DEFAULT_STATUS = "biblioteca";
 
 export const emptyRatings = {
@@ -94,6 +124,10 @@ export function countByStatus(readings) {
   }
 
   return counts;
+}
+
+export function readingsInBay(readings, status) {
+  return readings.filter((reading) => reading.status === status);
 }
 
 function normalizeSearch(text) {

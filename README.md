@@ -91,7 +91,7 @@ O deploy do demo roda em push para `main` (`.github/workflows/deploy.yml`). Na p
 
 Cada item da Estante é uma **Leitura** (não um “livro” na UI): título, autor, capa, status, notas opcionais e resenha.
 
-A aba **Minha biblioteca** lista **todas** as leituras da conta e inclui busca por título/autor. No cadastro, **Minha biblioteca** também é o status padrão para o que você já possui e ainda não leu.
+A **Estante** lista todas as leituras da conta, um vão por status, com busca por título/autor. No cadastro, **Minha biblioteca** é o status padrão para o que você já possui e ainda não leu.
 
 > [!TIP]
 > Vocabulário do produto (Leitura, Estante, Edição, etc.) vive em [`CONTEXT.md`](CONTEXT.md).
@@ -101,7 +101,7 @@ A aba **Minha biblioteca** lista **todas** as leituras da conta e inclui busca p
 ## Funcionalidades
 
 - **Conta pessoal** — nome de usuário único, confirmação de senha no cadastro; entrar com email ou username
-- **Catálogo e status** — Minha biblioteca, Quero comprar, Lendo, Lido, Abandonei
+- **Catálogo e status** — Estante em vãos: Quero comprar, Minha biblioteca, Lendo (vão do meio), Lido, Abandonei
 - **Busca** — filtro por título ou autor (acentos ignorados)
 - **Avaliação** — quatro categorias (Enredo, Personagens, Edição, Final) em Lendo/Lido
 - **Resenha** — texto livre em qualquer status
@@ -213,7 +213,7 @@ lbook/
 | --- | --- |
 | **Leitura** | Unidade da Estante (card) |
 | **Estante** | Tela principal / conjunto de Leituras da conta |
-| **Minha biblioteca** | Aba = catálogo todo; no form = status “possuo / ainda não li” |
+| **Minha biblioteca** | Vão / status “possuo e ainda não li”; o catálogo todo é a Estante |
 | **Edição** | Categoria de nota do objeto físico |
 | **Média da leitura** | Média das quatro notas (`final_rating`) |
 

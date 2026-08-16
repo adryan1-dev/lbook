@@ -26,11 +26,14 @@ function ChooseUsernameScreen() {
 
   return (
     <div className="flex min-h-dvh flex-col items-center justify-center px-4 py-12">
-      <div className="w-full max-w-md rounded-3xl border border-mist-200 bg-white p-6 shadow-panel sm:p-8">
-        <p className="font-display text-xs font-semibold tracking-[0.22em] text-blush-600 uppercase">
-          Lbook
-        </p>
-        <h1 id={titleId} className="mt-2 font-display text-2xl font-semibold text-ink-900">
+      <p className="font-display text-[11px] font-semibold tracking-[0.28em] text-blush-600 uppercase">
+        Lbook
+      </p>
+      <p className="mt-1 font-display text-4xl font-semibold tracking-tight text-ink-900">
+        Estante
+      </p>
+      <div className="mt-8 w-full max-w-md border border-mist-300 bg-white/90 p-6 shadow-panel sm:p-8">
+        <h1 id={titleId} className="font-display text-2xl font-semibold text-ink-900">
           Escolha um nome de usuário
         </h1>
         <p className="mt-2 text-sm text-ink-500">
@@ -79,6 +82,7 @@ function ChooseUsernameScreen() {
           Sair
         </button>
       </div>
+      <div className="lb-rail mt-0 w-full max-w-md" />
     </div>
   );
 }
