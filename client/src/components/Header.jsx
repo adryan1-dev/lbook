@@ -3,7 +3,7 @@ function Header({ count, localDemo = false, username, onSignOut, onNewReading })
     <header className="sticky top-0 z-10 border-b border-mist-300/90 bg-mist-50/90 backdrop-blur-sm">
       <div className="mx-auto flex max-w-7xl items-end gap-3 px-4 py-3 sm:gap-4 sm:px-6 sm:py-4">
         <div className="min-w-0 flex-1">
-          <p className="font-display text-[11px] font-semibold tracking-[0.28em] text-blush-600 uppercase">
+          <p className="font-display text-[11px] font-semibold tracking-[0.18em] text-blush-600 uppercase">
             Lbook
           </p>
           <h1 className="font-display text-3xl/none font-semibold tracking-tight text-ink-900 sm:text-4xl">

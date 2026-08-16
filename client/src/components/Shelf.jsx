@@ -17,10 +17,10 @@ function BayIndex({ bays, hasSearch }) {
         <a
           key={bay.value}
           href={`#vao-${bay.value}`}
-          className={`shrink-0 border-b-2 px-2.5 py-1.5 text-sm transition duration-150 ease-out ${
+          className={`shrink-0 px-2.5 py-1 text-sm transition duration-150 ease-out ${
             bay.featured
-              ? "border-blush-600 font-display font-semibold text-ink-900"
-              : "border-transparent font-semibold text-ink-500 hover:border-mist-400 hover:text-ink-900"
+              ? "bg-blush-100 font-display font-semibold text-ink-900"
+              : "font-semibold text-ink-500 hover:text-ink-900"
           }`}
         >
           {bay.label}
@@ -68,9 +68,9 @@ function EmptyCase({ onNewReading }) {
 
 function ShelfBay({ bay, onOpenReading }) {
   const featured = Boolean(bay.featured);
-  const grid = featured
-    ? "grid-cols-2 gap-x-5 gap-y-8 sm:grid-cols-3 lg:grid-cols-4"
-    : "grid-cols-3 gap-x-3 gap-y-7 sm:grid-cols-4 sm:gap-x-4 lg:grid-cols-6";
+  const itemWidth = featured
+    ? "w-[46%] sm:w-44 lg:w-52"
+    : "w-[31%] sm:w-32 lg:w-36";
 
   return (
     <section
@@ -95,26 +95,38 @@ function ShelfBay({ bay, onOpenReading }) {
         </p>
       </div>
 
-      <div className="px-3 pt-5 sm:px-4">
+      <div className="relative pt-5">
         {bay.items.length === 0 ? (
-          <EmptyBay bay={bay} />
+          <>
+            <div className="px-3 sm:px-4">
+              <EmptyBay bay={bay} />
+            </div>
+            <div className="lb-rail" />
+          </>
         ) : (
-          <ul className={`grid ${grid} pr-1`}>
-            {bay.items.map((reading, index) => (
-              <li key={reading.id} className="lb-shelf-item">
-                <ReadingCard
-                  reading={reading}
-                  featured={featured}
-                  eager={featured && index < 4}
-                  onOpen={onOpenReading}
-                />
-              </li>
-            ))}
-          </ul>
+          <>
+            <ul className="relative z-[1] flex gap-x-4 overflow-x-auto px-3 pb-1 pt-1 sm:gap-x-5 sm:px-4">
+              {bay.items.map((reading, index) => (
+                <li
+                  key={reading.id}
+                  className={`lb-shelf-item shrink-0 pr-2 ${itemWidth}`}
+                >
+                  <ReadingCard
+                    reading={reading}
+                    featured={featured}
+                    eager={featured && index < 4}
+                    onOpen={onOpenReading}
+                  />
+                </li>
+              ))}
+            </ul>
+            <div
+              className="lb-plank pointer-events-none absolute inset-x-0 bottom-1 h-[4.75rem]"
+              aria-hidden="true"
+            />
+          </>
         )}
       </div>
-
-      <div className="lb-rail mt-1" />
     </section>
   );
 }
@@ -157,6 +169,7 @@ function Shelf({ readings, hasSearch = false, onOpenReading, onNewReading }) {
             onOpenReading={onOpenReading}
           />
         ))}
+        <div className="lb-case-plinth" />
       </div>
     </div>
   );

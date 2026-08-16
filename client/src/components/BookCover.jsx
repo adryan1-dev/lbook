@@ -72,7 +72,7 @@ function BookCover({
 
         <div
           aria-hidden="true"
-          className="lb-spine pointer-events-none absolute inset-y-0 left-0 w-1/5"
+          className="lb-spine pointer-events-none absolute inset-y-0 left-0"
         />
 
         {percent !== null ? (

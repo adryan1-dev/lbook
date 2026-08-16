@@ -7,8 +7,8 @@ function ReadingCard({ reading, eager = false, featured = false, onOpen }) {
   const showProgress = statusShowsProgress(reading.status);
 
   return (
-    <article className="group relative">
-      <div className="origin-bottom transition-transform duration-200 ease-out-quart motion-safe:group-hover:-translate-y-1.5 motion-safe:group-focus-within:-translate-y-1.5">
+    <article className="group relative flex flex-col">
+      <div className="relative z-[1] mb-[-10px] origin-bottom transition-transform duration-200 ease-out-quart motion-safe:group-hover:-translate-y-2 motion-safe:group-focus-within:-translate-y-2">
         <BookCover
           title={reading.title}
           coverUrl={reading.coverUrl}
@@ -20,7 +20,11 @@ function ReadingCard({ reading, eager = false, featured = false, onOpen }) {
         />
       </div>
 
-      <div className={`mt-2.5 ${featured ? "" : "px-0.5"}`}>
+      <div
+        className={`relative z-[1] flex h-[4.75rem] flex-col pt-3 ${
+          featured ? "" : "px-0.5"
+        }`}
+      >
         <h3
           className={`line-clamp-2 font-display font-semibold text-ink-900 ${
             featured ? "text-[0.95rem]/snug" : "text-sm/snug"
@@ -48,7 +52,7 @@ function ReadingCard({ reading, eager = false, featured = false, onOpen }) {
       <button
         type="button"
         onClick={() => onOpen(reading)}
-        className="absolute -inset-1 rounded-sm"
+        className="absolute inset-0 z-10 rounded-sm"
       >
         <span className="sr-only">Abrir {reading.title}</span>
       </button>
