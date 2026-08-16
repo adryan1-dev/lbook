@@ -7,7 +7,8 @@
   ],
   "scripts": {
     "dev": "concurrently -n server,client -c cyan,magenta \"npm run dev -w lbook-server\" \"npm run dev -w lbook-client\"",
-    "dev:app": "npm run dev -w lbook-client"
+    "dev:app": "npm run dev -w lbook-client",
+    "test": "npm run test -w lbook-client"
   },
   "devDependencies": {
     "concurrently": "^8.0.2"

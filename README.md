@@ -100,7 +100,7 @@ A aba **Minha biblioteca** lista **todas** as leituras da conta e inclui busca p
 
 ## Funcionalidades
 
-- **Conta pessoal** — login por email/senha; cada pessoa com a própria Estante (App)
+- **Conta pessoal** — nome de usuário único, confirmação de senha no cadastro; entrar com email ou username
 - **Catálogo e status** — Minha biblioteca, Quero comprar, Lendo, Lido, Abandonei
 - **Busca** — filtro por título ou autor (acentos ignorados)
 - **Avaliação** — quatro categorias (Enredo, Personagens, Edição, Final) em Lendo/Lido

@@ -11,6 +11,7 @@ import {
 import { useAuth } from "./lib/auth";
 import { countByStatus, filterBySearch, labelOfStatus } from "./lib/readings";
 import AuthScreen from "./components/AuthScreen";
+import ChooseUsernameScreen from "./components/ChooseUsernameScreen";
 import ConfirmDialog from "./components/ConfirmDialog";
 import Header from "./components/Header";
 import ReadingDetailModal from "./components/ReadingDetailModal";
@@ -20,7 +21,8 @@ import Shelf from "./components/Shelf";
 import StatusTabs from "./components/StatusTabs";
 
 function App() {
-  const { user, loading: authLoading, signOut } = useAuth();
+  const { user, username, loading: authLoading, needsUsername, signOut } =
+    useAuth();
   const [readings, setReadings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState("");
@@ -136,6 +138,10 @@ function App() {
     if (!user) {
       return <AuthScreen />;
     }
+
+    if (needsUsername) {
+      return <ChooseUsernameScreen />;
+    }
   }
 
   return (
@@ -150,7 +156,7 @@ function App() {
       <Header
         count={readings.length}
         localDemo={usesLocalData}
-        userEmail={usesSupabase ? user?.email : null}
+        username={usesSupabase ? username : null}
         onSignOut={usesSupabase ? handleSignOut : null}
         onNewReading={() => setFormTarget({ reading: null })}
       />

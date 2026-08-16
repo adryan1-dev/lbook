@@ -22,9 +22,11 @@ _Avoid_: chamar o App de “demo”, “modo dev” ou “versão local”.
 ## Conta
 
 Identidade de quem usa o **App**. Uma conta = uma Estante isolada.
+Cada conta tem um **nome de usuário** único, mostrado abaixo de Estante.
+Dá para entrar com o email ou com esse nome de usuário.
 Amigos que quiserem usar criam a própria conta na mesma URL.
 
-_Avoid_: “usuário beta”, “perfil compartilhado”, “login do casal” (estante compartilhada ainda não existe).
+_Avoid_: “usuário beta”, “perfil compartilhado”, “login do casal” (estante compartilhada ainda não existe); mostrar o email no header no lugar do nome de usuário.
 
 ## Desenvolvimento
 

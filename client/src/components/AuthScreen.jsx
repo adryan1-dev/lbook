@@ -8,8 +8,11 @@ function AuthScreen() {
   const titleId = useId();
   const { signIn, signUp, resetPassword } = useAuth();
   const [mode, setMode] = useState("signIn");
+  const [identifier, setIdentifier] = useState("");
   const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [passwordConfirm, setPasswordConfirm] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
@@ -22,12 +25,14 @@ function AuthScreen() {
 
     try {
       if (mode === "signIn") {
-        await signIn(email.trim(), password);
+        await signIn(identifier.trim(), password);
       } else if (mode === "signUp") {
-        await signUp(email.trim(), password);
+        await signUp(email.trim(), username, password, passwordConfirm);
         setMessage("Conta criada! Você já pode usar sua estante.");
         setMode("signIn");
+        setIdentifier(email.trim());
         setPassword("");
+        setPasswordConfirm("");
       } else {
         await resetPassword(email.trim());
         setMessage(
@@ -49,7 +54,7 @@ function AuthScreen() {
 
   const subtitles = {
     signIn: "Suas leituras ficam salvas na nuvem — acesse de qualquer lugar.",
-    signUp: "Cadastre-se para catalogar seus livros com sua própria estante.",
+    signUp: "Cadastre-se para catalogar suas leituras com sua própria estante.",
     reset: "Informe seu email e enviamos um link para redefinir a senha.",
   };
 
@@ -69,18 +74,58 @@ function AuthScreen() {
           aria-labelledby={titleId}
           className="mt-6 flex flex-col gap-4"
         >
-          <label className="flex flex-col gap-1.5">
-            <span className="text-sm font-semibold text-ink-700">Email</span>
-            <input
-              type="email"
-              name="email"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-              required
-              autoComplete="email"
-              className={fieldClassName}
-            />
-          </label>
+          {mode === "signIn" ? (
+            <label className="flex flex-col gap-1.5">
+              <span className="text-sm font-semibold text-ink-700">
+                Email ou nome de usuário
+              </span>
+              <input
+                type="text"
+                name="identifier"
+                value={identifier}
+                onChange={(event) => setIdentifier(event.target.value)}
+                required
+                autoComplete="username"
+                className={fieldClassName}
+              />
+            </label>
+          ) : (
+            <label className="flex flex-col gap-1.5">
+              <span className="text-sm font-semibold text-ink-700">Email</span>
+              <input
+                type="email"
+                name="email"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+                required
+                autoComplete="email"
+                className={fieldClassName}
+              />
+            </label>
+          )}
+
+          {mode === "signUp" ? (
+            <label className="flex flex-col gap-1.5">
+              <span className="text-sm font-semibold text-ink-700">
+                Nome de usuário
+              </span>
+              <input
+                type="text"
+                name="username"
+                value={username}
+                onChange={(event) => setUsername(event.target.value)}
+                required
+                minLength={3}
+                maxLength={20}
+                autoComplete="username"
+                spellCheck={false}
+                className={fieldClassName}
+              />
+              <span className="text-xs text-ink-500">
+                3–20 caracteres: letras, números e underline. Precisa ser único.
+              </span>
+            </label>
+          ) : null}
 
           {mode !== "reset" ? (
             <label className="flex flex-col gap-1.5">
@@ -93,6 +138,24 @@ function AuthScreen() {
                 required
                 minLength={6}
                 autoComplete={mode === "signIn" ? "current-password" : "new-password"}
+                className={fieldClassName}
+              />
+            </label>
+          ) : null}
+
+          {mode === "signUp" ? (
+            <label className="flex flex-col gap-1.5">
+              <span className="text-sm font-semibold text-ink-700">
+                Confirmar senha
+              </span>
+              <input
+                type="password"
+                name="passwordConfirm"
+                value={passwordConfirm}
+                onChange={(event) => setPasswordConfirm(event.target.value)}
+                required
+                minLength={6}
+                autoComplete="new-password"
                 className={fieldClassName}
               />
             </label>
