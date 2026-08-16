@@ -6,7 +6,6 @@ import {
   statusAllowsRatings,
   statusShowsProgress,
 } from "../lib/readings";
-import BookCover from "./BookCover";
 import Modal from "./Modal";
 import ReadingProgress from "./ReadingProgress";
 import StarIcon from "./StarIcon";
@@ -14,18 +13,10 @@ import StarIcon from "./StarIcon";
 const fieldClassName =
   "w-full rounded-xl border border-mist-200 bg-mist-50 px-3 py-2.5 text-ink-900 transition duration-150 ease-out focus:border-mist-500 focus:bg-white focus:outline-none focus:ring-3 focus:ring-mist-400/35";
 
-function RatingRow({ label, value, emphasis = false }) {
+function RatingRow({ label, value }) {
   return (
-    <li
-      className={`flex items-center justify-between gap-3 border-b border-mist-100 py-2 last:border-b-0 ${
-        emphasis ? "bg-leaf-50/80 px-2" : ""
-      }`}
-    >
-      <span
-        className={`text-sm ${emphasis ? "font-semibold text-ink-900" : "text-ink-700"}`}
-      >
-        {label}
-      </span>
+    <li className="flex items-center justify-between gap-3 border-b border-mist-100 py-2 last:border-b-0">
+      <span className="text-sm text-ink-700">{label}</span>
       <span
         className="flex items-center gap-0.5"
         role="img"
@@ -146,16 +137,28 @@ function ReadingDetailModal({
 
       <div className="mt-5 gap-6 sm:flex">
         <div className="mx-auto w-40 shrink-0 sm:mx-0">
-          <BookCover
-            title={reading.title}
-            coverUrl={reading.coverUrl}
-            edition={reading.ratings?.edition}
-            currentPage={reading.currentPage}
-            totalPages={reading.totalPages}
-            showProgress={showProgress}
-            eager
-            size="detail"
-          />
+          <div className="relative overflow-hidden rounded-l-[2px] rounded-r-md bg-mist-100 shadow-cover">
+            <div className="aspect-2/3">
+              {reading.coverUrl ? (
+                <img
+                  src={reading.coverUrl}
+                  alt={`Capa de ${reading.title}`}
+                  width={400}
+                  height={600}
+                  decoding="async"
+                  className="size-full object-cover"
+                />
+              ) : (
+                <div className="flex size-full items-center justify-center bg-blush-100 px-2 text-center text-xs text-blush-600">
+                  Sem foto da capa
+                </div>
+              )}
+            </div>
+            <div
+              aria-hidden="true"
+              className="lb-spine pointer-events-none absolute inset-y-0 left-0 w-1/5"
+            />
+          </div>
 
           {showRatings ? (
             <p className="mt-3 flex items-baseline justify-center gap-1.5 sm:justify-start">
@@ -181,7 +184,6 @@ function ReadingDetailModal({
                     key={category.key}
                     label={category.label}
                     value={reading.ratings[category.key]}
-                    emphasis={category.key === "edition"}
                   />
                 ))}
               </ul>

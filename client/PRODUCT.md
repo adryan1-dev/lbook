@@ -30,7 +30,6 @@ The unit is a Leitura, not a book listing. It covers the whole journey: quero co
 - Copy and UI are Brazilian Portuguese.
 - Reopening the Estante is the primary task; adding a Leitura is secondary.
 - Shared shelf (couple/group) is a stated future idea, not shipped.
-- The Estante is furniture: one bay per status, Lendo in the middle at hand height.
 
 ## Capabilities and Constraints
 
@@ -38,7 +37,7 @@ Shipped: account with unique username; sign-in with email or username; statuses 
 
 Not shipped: shared Estante, advanced filters, ranking/favorites, reading history/stats. Do not design or copy as if they exist.
 
-Terminology is product law, not style: Leitura is the list item (never “livro”), Estante is the home surface, Minha biblioteca is the owned-unread bay (the full catalog is the Estante), Edição is physical-object quality (not the edit action), Média da leitura is the four-category average (not “nota final”).
+Terminology is product law, not style: Leitura is the list item (never “livro”), Estante is the home surface, Minha biblioteca is both the full-catalog tab and the default owned-unread status, Edição is physical-object quality (not the edit action), Média da leitura is the four-category average (not “nota final”).
 
 ## Brand Commitments
 

@@ -9,7 +9,7 @@ import {
   usesSupabase,
 } from "./lib/store";
 import { useAuth } from "./lib/auth";
-import { filterBySearch, labelOfStatus } from "./lib/readings";
+import { countByStatus, filterBySearch, labelOfStatus } from "./lib/readings";
 import AuthScreen from "./components/AuthScreen";
 import ChooseUsernameScreen from "./components/ChooseUsernameScreen";
 import ConfirmDialog from "./components/ConfirmDialog";
@@ -18,6 +18,7 @@ import ReadingDetailModal from "./components/ReadingDetailModal";
 import ReadingFormModal from "./components/ReadingFormModal";
 import SearchBar from "./components/SearchBar";
 import Shelf from "./components/Shelf";
+import StatusTabs from "./components/StatusTabs";
 
 function App() {
   const { user, username, loading: authLoading, needsUsername, signOut } =
@@ -26,6 +27,7 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState("");
   const [feedback, setFeedback] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
 
   const [selectedId, setSelectedId] = useState(null);
@@ -34,8 +36,13 @@ function App() {
   const [deleting, setDeleting] = useState(false);
 
   const selectedReading = readings.find((item) => item.id === selectedId);
+  const statusCounts = countByStatus(readings);
   const hasSearch = Boolean(searchQuery.trim());
-  const visibleReadings = filterBySearch(readings, searchQuery);
+  const byStatus =
+    statusFilter === "all"
+      ? readings
+      : readings.filter((item) => item.status === statusFilter);
+  const visibleReadings = filterBySearch(byStatus, searchQuery);
 
   const loadShelf = useCallback(async () => {
     setLoading(true);
@@ -156,7 +163,7 @@ function App() {
 
       <main
         id="estante"
-        className="mx-auto max-w-7xl px-4 py-5 sm:px-6 sm:py-7"
+        className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8"
       >
         <p role="status" className="sr-only">
           {feedback}
@@ -197,14 +204,23 @@ function App() {
             </button>
           </div>
         ) : (
-          <div className="flex flex-col gap-5">
+          <div className="flex flex-col gap-6">
             {readings.length > 0 ? (
-              <SearchBar value={searchQuery} onChange={setSearchQuery} />
+              <>
+                <SearchBar value={searchQuery} onChange={setSearchQuery} />
+                <StatusTabs
+                  active={statusFilter}
+                  counts={statusCounts}
+                  onChange={setStatusFilter}
+                />
+              </>
             ) : null}
 
             <Shelf
               readings={visibleReadings}
+              statusFilter={statusFilter}
               hasSearch={hasSearch}
+              showStatusBadge={statusFilter === "all"}
               onOpenReading={(reading) => setSelectedId(reading.id)}
               onNewReading={() => setFormTarget({ reading: null })}
             />

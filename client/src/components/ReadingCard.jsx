@@ -1,58 +1,87 @@
-import { averageOf, statusShowsProgress } from "../lib/readings";
-import BookCover from "./BookCover";
+import {
+  averageOf,
+  labelOfStatus,
+  statusShowsProgress,
+} from "../lib/readings";
+import ReadingProgress from "./ReadingProgress";
 import StarIcon from "./StarIcon";
 
-function ReadingCard({ reading, eager = false, featured = false, onOpen }) {
+function initialsOf(title) {
+  return title
+    .split(/\s+/)
+    .filter((word) => word.length > 2)
+    .slice(0, 2)
+    .map((word) => word[0].toUpperCase())
+    .join("");
+}
+
+function ReadingCard({ reading, showStatusBadge = false, eager = false, onOpen }) {
   const average = averageOf(reading.ratings);
   const showProgress = statusShowsProgress(reading.status);
 
   return (
-    <article className="group relative flex flex-col">
-      <div className="relative z-[1] mb-[-10px] origin-bottom transition-transform duration-200 ease-out-quart motion-safe:group-hover:-translate-y-2 motion-safe:group-focus-within:-translate-y-2">
-        <BookCover
-          title={reading.title}
-          coverUrl={reading.coverUrl}
-          edition={reading.ratings?.edition}
-          currentPage={reading.currentPage}
-          totalPages={reading.totalPages}
-          showProgress={showProgress}
-          eager={eager}
+    <article className="group relative">
+      <div className="relative overflow-hidden rounded-l-[2px] rounded-r-md bg-mist-200 shadow-cover transition-transform duration-200 ease-out-quart motion-safe:group-hover:-translate-y-1">
+        <div className="aspect-2/3">
+          {reading.coverUrl ? (
+            <img
+              src={reading.coverUrl}
+              alt={`Capa de ${reading.title}`}
+              width={400}
+              height={600}
+              loading={eager ? "eager" : "lazy"}
+              fetchPriority={eager ? "high" : "auto"}
+              decoding="async"
+              className="size-full object-cover"
+            />
+          ) : (
+            <div className="flex size-full items-center justify-center bg-blush-100">
+              <span className="font-display text-3xl font-semibold text-blush-400">
+                {initialsOf(reading.title) || "?"}
+              </span>
+            </div>
+          )}
+        </div>
+
+        <div
+          aria-hidden="true"
+          className="lb-spine pointer-events-none absolute inset-y-0 left-0 w-1/5"
         />
+
+        {showStatusBadge ? (
+          <span className="absolute top-2 right-2 rounded-full bg-white/95 px-2 py-0.5 text-[10px] font-semibold tracking-wide text-ink-700 uppercase shadow-sm">
+            {labelOfStatus(reading.status)}
+          </span>
+        ) : null}
       </div>
 
-      <div
-        className={`relative z-[1] flex h-[4.75rem] flex-col pt-3 ${
-          featured ? "" : "px-0.5"
-        }`}
-      >
-        <h3
-          className={`line-clamp-2 font-display font-semibold text-ink-900 ${
-            featured ? "text-[0.95rem]/snug" : "text-sm/snug"
-          }`}
-        >
+      <div className="mt-3">
+        <h3 className="line-clamp-2 font-display text-sm/snug font-semibold text-ink-900">
           {reading.title}
         </h3>
         <p className="mt-0.5 line-clamp-1 text-xs text-ink-500">
           {reading.author}
         </p>
-        <p className="mt-1 flex items-center gap-1 text-xs font-semibold text-ink-700">
+        <p className="mt-1.5 flex items-center gap-1 text-xs font-semibold text-ink-700">
           <StarIcon className="size-3.5 text-sun-400" />
           <span className="tabular-nums">{average ?? "—"}</span>
           <span className="sr-only">
             {average ? "de média" : "sem média: faltam notas"}
           </span>
-          {showProgress && reading.totalPages > 0 ? (
-            <span className="ml-1 font-medium tabular-nums text-ink-500">
-              {reading.currentPage}/{reading.totalPages}
-            </span>
-          ) : null}
         </p>
+        {showProgress ? (
+          <ReadingProgress
+            currentPage={reading.currentPage}
+            totalPages={reading.totalPages}
+            compact
+          />
+        ) : null}
       </div>
 
       <button
         type="button"
         onClick={() => onOpen(reading)}
-        className="absolute inset-0 z-10 rounded-sm"
+        className="absolute -inset-1 rounded-xl"
       >
         <span className="sr-only">Abrir {reading.title}</span>
       </button>
