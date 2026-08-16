@@ -1,3 +1,5 @@
+import { BookPlus, LogOut } from "./icons";
+
 function Header({ count, localDemo = false, username, onSignOut, onNewReading }) {
   return (
     <header className="sticky top-0 z-10 border-b border-mist-200 bg-mist-50/85 backdrop-blur-sm">
@@ -28,16 +30,18 @@ function Header({ count, localDemo = false, username, onSignOut, onNewReading })
             <button
               type="button"
               onClick={onSignOut}
-              className="rounded-full border border-mist-200 px-3 py-2 text-sm font-semibold text-ink-700 transition duration-150 ease-out hover:bg-mist-100"
+              className="inline-flex items-center gap-1.5 rounded-full border border-mist-200 px-3 py-2 text-sm font-semibold text-ink-700 transition duration-150 ease-out hover:bg-mist-100"
             >
+              <LogOut className="size-4" />
               Sair
             </button>
           ) : null}
           <button
             type="button"
             onClick={onNewReading}
-            className="rounded-full bg-mist-700 px-4 py-2.5 text-sm font-semibold text-white transition duration-150 ease-out hover:bg-mist-600 active:scale-97"
+            className="inline-flex items-center gap-1.5 rounded-full bg-mist-700 px-4 py-2.5 text-sm font-semibold text-white transition duration-150 ease-out hover:bg-mist-600 active:scale-97"
           >
+            <BookPlus className="size-4" />
             Adicionar à estante
           </button>
         </div>

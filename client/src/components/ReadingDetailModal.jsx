@@ -8,7 +8,7 @@ import {
 } from "../lib/readings";
 import Modal from "./Modal";
 import ReadingProgress from "./ReadingProgress";
-import StarIcon from "./StarIcon";
+import { Close, Pencil, Star, Trash } from "./icons";
 
 const fieldClassName =
   "w-full rounded-xl border border-mist-200 bg-mist-50 px-3 py-2.5 text-ink-900 transition duration-150 ease-out focus:border-mist-500 focus:bg-white focus:outline-none focus:ring-3 focus:ring-mist-400/35";
@@ -23,8 +23,9 @@ function RatingRow({ label, value }) {
         aria-label={`${value} de 5`}
       >
         {[1, 2, 3, 4, 5].map((star) => (
-          <StarIcon
+          <Star
             key={star}
+            filled={star <= value}
             className={`size-4 ${star <= value ? "text-sun-400" : "text-mist-200"}`}
           />
         ))}
@@ -86,10 +87,8 @@ function ReadingDetailModal({
           onClick={onClose}
           className="-m-2 flex size-11 shrink-0 items-center justify-center rounded-full text-ink-500 transition duration-150 ease-out hover:bg-mist-100 hover:text-ink-900"
         >
-          <span aria-hidden="true" className="text-xl leading-none">
-            ×
-          </span>
-          <span className="sr-only">Fechar</span>
+            <Close className="size-5" />
+            <span className="sr-only">Fechar</span>
         </button>
       </div>
 
@@ -213,15 +212,17 @@ function ReadingDetailModal({
         <button
           type="button"
           onClick={() => onDelete(reading)}
-          className="rounded-full px-4 py-2.5 text-sm font-semibold text-berry-600 transition duration-150 ease-out hover:bg-berry-500/10"
+          className="inline-flex items-center justify-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold text-berry-600 transition duration-150 ease-out hover:bg-berry-500/10"
         >
+          <Trash className="size-4" />
           Excluir
         </button>
         <button
           type="button"
           onClick={() => onEdit(reading)}
-          className="rounded-full bg-mist-700 px-5 py-2.5 text-sm font-semibold text-white transition duration-150 ease-out hover:bg-mist-600 active:scale-97"
+          className="inline-flex items-center justify-center gap-2 rounded-full bg-mist-700 px-5 py-2.5 text-sm font-semibold text-white transition duration-150 ease-out hover:bg-mist-600 active:scale-97"
         >
+          <Pencil className="size-4" />
           Editar leitura
         </button>
       </div>

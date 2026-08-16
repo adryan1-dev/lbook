@@ -13,20 +13,34 @@ _Avoid_: chamar o demo de “versão beta”, “staging” ou “produção ful
 
 ## App
 
-A versão com conta (Vercel + Supabase): login por email/senha, Estante na nuvem.
+A versão com conta (Vercel + Supabase): login por email ou **nome de usuário**, Estante na nuvem.
 Cada conta tem a própria Estante — ninguém vê nem edita a de outra pessoa.
-É a URL que você passa para quem vai usar de verdade (ex.: sua namorada catalogar livros).
+É a URL que você passa para quem vai usar de verdade (ex.: sua namorada catalogar leituras).
 
 _Avoid_: chamar o App de “demo”, “modo dev” ou “versão local”.
 
 ## Conta
 
 Identidade de quem usa o **App**. Uma conta = uma Estante isolada.
-Cada conta tem um **nome de usuário** único, mostrado abaixo de Estante.
-Dá para entrar com o email ou com esse nome de usuário.
-Amigos que quiserem usar criam a própria conta na mesma URL.
+Cada conta tem um **nome de usuário** único. Amigos que quiserem usar criam
+a própria conta na mesma URL.
 
-_Avoid_: “usuário beta”, “perfil compartilhado”, “login do casal” (estante compartilhada ainda não existe); mostrar o email no header no lugar do nome de usuário.
+_Avoid_: “usuário beta”, “perfil compartilhado”, “login do casal” (estante compartilhada ainda não existe).
+
+## Nome de usuário
+
+Handle único da **Conta**, 3–20 caracteres (`a-z`, `0-9`, `_`). Aparece abaixo de
+Estante no header. Dá para entrar com o email **ou** com esse nome.
+Contas antigas sem handle passam pela tela “Escolha um nome de usuário” antes da Estante.
+
+_Avoid_: mostrar o email no header no lugar do nome de usuário; tratar o handle como “apelido” ou “nick”.
+
+## Mostrar senha / Ocultar senha
+
+Controle do campo **Senha** (e **Confirmar senha**): o olho revela o texto digitado;
+o olho riscado oculta de novo. O rótulo acessível é “Mostrar senha” ou “Ocultar senha”.
+
+_Avoid_: “ver senha”, “toggle”, “eye”, “mostrar/esconder” na UI.
 
 ## Desenvolvimento
 
@@ -50,7 +64,8 @@ Aba do catálogo completo: todas as Leituras persistidas, com busca por título 
 No formulário, “Minha biblioteca” também é o status padrão ao cadastrar o que você
 já possui e ainda não leu.
 
-_Avoid_: tratar a aba Minha biblioteca como só os não lidos.
+_Avoid_: tratar a aba Minha biblioteca como só os não lidos; no vazio do catálogo,
+chamar a superfície de “sua biblioteca” — o nome da tela continua **Estante**.
 
 ## Status de leitura
 
@@ -72,7 +87,8 @@ _Avoid_: Coleção, Minha coleção, lista.
 A obra em si — título, autor e capa. São atributos de uma Leitura, não uma entidade própria
 na interface.
 
-_Avoid_: usar "livro" para nomear o card ou o conjunto.
+_Avoid_: usar "livro" para nomear o card, o conjunto, ou o CTA de vazio
+(“cadastre o primeiro livro”). A unidade é sempre Leitura.
 
 ## Progresso
 

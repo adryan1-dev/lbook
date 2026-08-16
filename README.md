@@ -12,7 +12,7 @@ Caderno pessoal de leituras: catalogar o que você tem, organizar por status, av
 
 **Demo:** [adryan1-dev.github.io/lbook](https://adryan1-dev.github.io/lbook/) — estante no navegador, sem login.
 
-**App (conta + nuvem):** deploy na Vercel com Supabase — cada pessoa tem a própria Estante, acessível de qualquer lugar.
+**App (conta + nuvem):** [lbook-woad.vercel.app](https://lbook-woad.vercel.app) — Supabase, cada pessoa tem a própria Estante.
 
 [Visão geral](#visão-geral) · [Modos](#modos) · [App com login](#app-com-login) · [Demo](#demo) · [Stack](#stack) · [Começando](#começando) · [Arquitetura](#arquitetura) · [Estrutura](#estrutura-do-projeto) · [Glossário](#glossário)
 
@@ -24,7 +24,7 @@ Um único `main` compartilha UI e componentes; a persistência muda no build:
 
 | Modo | URL | Persistência | Login |
 | --- | --- | --- | --- |
-| **App** | Vercel (ex.: `lbook.vercel.app`) | Supabase Postgres + Storage | Sim — estante por conta |
+| **App** | [lbook-woad.vercel.app](https://lbook-woad.vercel.app) | Supabase Postgres + Storage | Sim — estante por conta |
 | **Demo** | GitHub Pages | `localStorage` (`VITE_DATA_SOURCE=local`) | Não |
 | **Legado** | `npm run dev` (local) | Express + PostgreSQL local | Não |
 
@@ -37,7 +37,7 @@ O app de produção usa **Supabase** (auth + banco + capas) e **Vercel** (fronte
 ### Setup Supabase (uma vez)
 
 1. Crie um projeto gratuito em [supabase.com](https://supabase.com) (região próxima, ex. `sa-east-1`).
-2. Rode o SQL em [`supabase/migrations/001_books_auth.sql`](supabase/migrations/001_books_auth.sql) no SQL Editor.
+2. Rode o SQL em `supabase/migrations/` no SQL Editor, nesta ordem: `001`, `002`.
 3. **Authentication → Providers → Email** — habilitado; **Confirm email** — desligado na v1.
 4. Copie **Project URL** e **anon key** (Settings → API).
 
@@ -100,7 +100,8 @@ A aba **Minha biblioteca** lista **todas** as leituras da conta e inclui busca p
 
 ## Funcionalidades
 
-- **Conta pessoal** — nome de usuário único, confirmação de senha no cadastro; entrar com email ou username
+- **Conta pessoal** — nome de usuário único, confirmação de senha no cadastro; entrar com email ou nome de usuário
+- **Visibilidade da senha** — olho no campo para mostrar ou ocultar o texto
 - **Catálogo e status** — Minha biblioteca, Quero comprar, Lendo, Lido, Abandonei
 - **Busca** — filtro por título ou autor (acentos ignorados)
 - **Avaliação** — quatro categorias (Enredo, Personagens, Edição, Final) em Lendo/Lido
@@ -134,6 +135,7 @@ npm install
 | --- | --- |
 | `npm run dev:app` | Vite com Supabase (`client/.env` obrigatório) |
 | `npm run dev` | Client + Express local (legado) |
+| `npm run test` | Testes do client (Vitest) |
 | `npm run build -w lbook-client` | Build de produção |
 | `npm run dev -w lbook-server` | Só API Express |
 
@@ -188,15 +190,21 @@ Legado: Browser → Vite proxy → Express → PostgreSQL + uploads/
 lbook/
 ├── client/                     # React + Vite + Tailwind
 │   ├── src/
-│   │   ├── components/         # Estante, AuthScreen, modais…
+│   │   ├── components/         # Estante, AuthScreen, ícones Lucide…
+│   │   │   ├── icons.jsx       # conjunto único de ícones (olho, estrela, busca…)
+│   │   │   ├── PasswordField.jsx
+│   │   │   └── …
 │   │   └── lib/
 │   │       ├── store.js        # local | supabase | api
 │   │       ├── supabaseStore.js
 │   │       ├── auth.jsx
+│   │       ├── identity.js     # username + senha
 │   │       └── …
+│   ├── PRODUCT.md              # verdade durável do produto
 │   └── .env.example
 ├── supabase/
 │   ├── migrations/001_books_auth.sql
+│   ├── migrations/002_profiles_username.sql
 │   └── README.md
 ├── vercel.json                 # Deploy do App
 ├── .github/workflows/          # GitHub Pages (demo)
@@ -214,6 +222,8 @@ lbook/
 | **Leitura** | Unidade da Estante (card) |
 | **Estante** | Tela principal / conjunto de Leituras da conta |
 | **Minha biblioteca** | Aba = catálogo todo; no form = status “possuo / ainda não li” |
+| **Nome de usuário** | Handle único da conta; dá para entrar com ele ou com o email |
+| **Mostrar senha** | Olho no campo Senha: revela ou oculta o texto |
 | **Edição** | Categoria de nota do objeto físico |
 | **Média da leitura** | Média das quatro notas (`final_rating`) |
 
@@ -225,7 +235,8 @@ Detalhes: [`CONTEXT.md`](CONTEXT.md).
 
 | Sintoma | O que checar |
 | --- | --- |
-| Tela de login não some após entrar | Supabase Auth; confirme email desligado na v1 |
+| Tela de login não some após entrar | Supabase Auth; confirme email desligado na v1; rode a migration `002` |
+| Pediu nome de usuário de novo | Migration `002` não rodou, ou o handle não gravou em `profiles` |
 | “Sessão expirada” | Entre de novo; verifique `VITE_SUPABASE_*` na Vercel |
 | Estante vazia para todos | Rode a migration SQL; confira RLS |
 | Capa não aparece (App) | Bucket `covers` criado; policies de Storage |

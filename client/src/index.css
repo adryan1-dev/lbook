@@ -69,6 +69,12 @@
     -webkit-tap-highlight-color: transparent;
   }
 
+  /* O olho nativo do Edge compete com o alternador do app. */
+  input::-ms-reveal,
+  input::-ms-clear {
+    display: none;
+  }
+
   body {
     margin: 0;
     min-height: 100dvh;

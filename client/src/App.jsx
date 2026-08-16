@@ -19,6 +19,7 @@ import ReadingFormModal from "./components/ReadingFormModal";
 import SearchBar from "./components/SearchBar";
 import Shelf from "./components/Shelf";
 import StatusTabs from "./components/StatusTabs";
+import { Refresh } from "./components/icons";
 
 function App() {
   const { user, username, loading: authLoading, needsUsername, signOut } =
@@ -198,8 +199,9 @@ function App() {
             <button
               type="button"
               onClick={loadShelf}
-              className="mt-6 rounded-full border border-ink-400/50 px-5 py-2.5 text-sm font-semibold text-ink-700 transition duration-150 ease-out hover:bg-white"
+              className="mt-6 inline-flex items-center gap-1.5 rounded-full border border-ink-400/50 px-5 py-2.5 text-sm font-semibold text-ink-700 transition duration-150 ease-out hover:bg-white"
             >
+              <Refresh className="size-4" />
               Tentar de novo
             </button>
           </div>

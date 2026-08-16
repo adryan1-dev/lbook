@@ -13,6 +13,7 @@ import ConfirmDialog from "./ConfirmDialog";
 import Modal from "./Modal";
 import ReadingProgress from "./ReadingProgress";
 import StarRating from "./StarRating";
+import { Close } from "./icons";
 
 const fieldClassName =
   "w-full rounded-xl border border-mist-200 bg-mist-50 px-3 py-2.5 text-ink-900 transition duration-150 ease-out placeholder:text-ink-400 focus:border-mist-500 focus:bg-white focus:outline-none focus:ring-3 focus:ring-mist-400/35";
@@ -133,9 +134,7 @@ function ReadingFormModal({ reading, onSubmit, onClose }) {
             onClick={requestClose}
             className="-m-2 flex size-11 shrink-0 items-center justify-center rounded-full text-ink-500 transition duration-150 ease-out hover:bg-mist-100 hover:text-ink-900"
           >
-            <span aria-hidden="true" className="text-xl leading-none">
-              ×
-            </span>
+            <Close className="size-5" />
             <span className="sr-only">Fechar</span>
           </button>
         </div>

@@ -4,7 +4,7 @@ import {
   statusShowsProgress,
 } from "../lib/readings";
 import ReadingProgress from "./ReadingProgress";
-import StarIcon from "./StarIcon";
+import { Star } from "./icons";
 
 function initialsOf(title) {
   return title
@@ -63,7 +63,7 @@ function ReadingCard({ reading, showStatusBadge = false, eager = false, onOpen }
           {reading.author}
         </p>
         <p className="mt-1.5 flex items-center gap-1 text-xs font-semibold text-ink-700">
-          <StarIcon className="size-3.5 text-sun-400" />
+          <Star filled className="size-3.5 text-sun-400" />
           <span className="tabular-nums">{average ?? "—"}</span>
           <span className="sr-only">
             {average ? "de média" : "sem média: faltam notas"}
