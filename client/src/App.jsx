@@ -6,8 +6,11 @@ import {
   readingToFormData,
   updateReading,
   usesLocalData,
+  usesSupabase,
 } from "./lib/store";
+import { useAuth } from "./lib/auth";
 import { countByStatus, filterBySearch, labelOfStatus } from "./lib/readings";
+import AuthScreen from "./components/AuthScreen";
 import ConfirmDialog from "./components/ConfirmDialog";
 import Header from "./components/Header";
 import ReadingDetailModal from "./components/ReadingDetailModal";
@@ -17,6 +20,7 @@ import Shelf from "./components/Shelf";
 import StatusTabs from "./components/StatusTabs";
 
 function App() {
+  const { user, loading: authLoading, signOut } = useAuth();
   const [readings, setReadings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState("");
@@ -51,8 +55,11 @@ function App() {
   }, []);
 
   useEffect(() => {
+    if (usesSupabase && (authLoading || !user)) {
+      return;
+    }
     loadShelf();
-  }, [loadShelf]);
+  }, [loadShelf, authLoading, user]);
 
   useEffect(() => {
     if (!feedback) {
@@ -105,6 +112,32 @@ function App() {
     }
   };
 
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      setReadings([]);
+      setSelectedId(null);
+      setFormTarget(null);
+      setPendingDelete(null);
+    } catch (error) {
+      setFeedback(error.message);
+    }
+  };
+
+  if (usesSupabase) {
+    if (authLoading) {
+      return (
+        <div className="flex min-h-dvh items-center justify-center text-sm text-ink-500">
+          Abrindo…
+        </div>
+      );
+    }
+
+    if (!user) {
+      return <AuthScreen />;
+    }
+  }
+
   return (
     <div className="min-h-dvh">
       <a
@@ -117,6 +150,8 @@ function App() {
       <Header
         count={readings.length}
         localDemo={usesLocalData}
+        userEmail={usesSupabase ? user?.email : null}
+        onSignOut={usesSupabase ? handleSignOut : null}
         onNewReading={() => setFormTarget({ reading: null })}
       />
 
@@ -150,7 +185,9 @@ function App() {
               {loadError}
               {usesLocalData
                 ? ""
-                : " Verifique se o servidor está rodando e tente de novo."}
+                : usesSupabase
+                  ? " Verifique sua conexão e tente de novo."
+                  : " Verifique se o servidor está rodando e tente de novo."}
             </p>
             <button
               type="button"

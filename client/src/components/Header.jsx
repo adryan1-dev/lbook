@@ -1,4 +1,4 @@
-function Header({ count, localDemo = false, onNewReading }) {
+function Header({ count, localDemo = false, userEmail, onSignOut, onNewReading }) {
   return (
     <header className="sticky top-0 z-10 border-b border-mist-200 bg-mist-50/85 backdrop-blur-sm">
       <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-3 sm:px-6">
@@ -18,16 +18,29 @@ function Header({ count, localDemo = false, onNewReading }) {
             <p className="mt-0.5 text-xs text-ink-500">
               Dados só neste navegador
             </p>
+          ) : userEmail ? (
+            <p className="mt-0.5 truncate text-xs text-ink-500">{userEmail}</p>
           ) : null}
         </div>
 
-        <button
-          type="button"
-          onClick={onNewReading}
-          className="ml-auto shrink-0 rounded-full bg-mist-700 px-4 py-2.5 text-sm font-semibold text-white transition duration-150 ease-out hover:bg-mist-600 active:scale-97"
-        >
-          Adicionar à estante
-        </button>
+        <div className="ml-auto flex shrink-0 items-center gap-2">
+          {onSignOut ? (
+            <button
+              type="button"
+              onClick={onSignOut}
+              className="rounded-full border border-mist-200 px-3 py-2 text-sm font-semibold text-ink-700 transition duration-150 ease-out hover:bg-mist-100"
+            >
+              Sair
+            </button>
+          ) : null}
+          <button
+            type="button"
+            onClick={onNewReading}
+            className="rounded-full bg-mist-700 px-4 py-2.5 text-sm font-semibold text-white transition duration-150 ease-out hover:bg-mist-600 active:scale-97"
+          >
+            Adicionar à estante
+          </button>
+        </div>
       </div>
     </header>
   );

@@ -11,13 +11,27 @@ Na primeira visita, o app pode mostrar leituras de exemplo para explorar o produ
 
 _Avoid_: chamar o demo de “versão beta”, “staging” ou “produção full stack”.
 
+## App
+
+A versão com conta (Vercel + Supabase): login por email/senha, Estante na nuvem.
+Cada conta tem a própria Estante — ninguém vê nem edita a de outra pessoa.
+É a URL que você passa para quem vai usar de verdade (ex.: sua namorada catalogar livros).
+
+_Avoid_: chamar o App de “demo”, “modo dev” ou “versão local”.
+
+## Conta
+
+Identidade de quem usa o **App**. Uma conta = uma Estante isolada.
+Amigos que quiserem usar criam a própria conta na mesma URL.
+
+_Avoid_: “usuário beta”, “perfil compartilhado”, “login do casal” (estante compartilhada ainda não existe).
+
 ## Desenvolvimento
 
-O modo local com `npm run dev`: client + API + PostgreSQL. É onde a persistência
-server-side e futuras features (login, estante por usuário) são construídas.
-Não é a URL pública do portfólio.
+Ambiente local para construir o Lbook. Com `client/.env` (Supabase), `npm run dev:app` espelha o **App**.
+Com `npm run dev` na raiz, sobe client + Express + Postgres local (modo legado, sem login).
 
-_Avoid_: tratar `npm run dev` como sinônimo do demo público.
+_Avoid_: tratar desenvolvimento local como sinônimo do demo público ou do App em produção.
 
 ## Leitura
 
@@ -47,6 +61,7 @@ _Avoid_: categoria (colide com as categorias de nota), tag, prateleira.
 
 O conjunto de Leituras e a tela principal do Lbook. Revisitar a Estante é o trabalho primário
 da interface; cadastrar é secundário. A home abre em Minha biblioteca.
+No **App**, a Estante pertence à conta logada.
 
 _Avoid_: Coleção, Minha coleção, lista.
 
@@ -88,6 +103,6 @@ _Avoid_: nota final (colide com a categoria Final).
 ## Dados só neste navegador
 
 Aviso discreto no header do **Demo**: deixa claro que a Estante vive apenas
-no navegador daquele visitante. Não aparece no modo Desenvolvimento.
+no navegador daquele visitante. Não aparece no **App** (dados na nuvem).
 
 _Avoid_: “modo offline”, “sem servidor” como título; “localStorage” na UI.
