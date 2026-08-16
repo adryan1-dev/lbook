@@ -5,7 +5,6 @@ import {
   listReadings,
   readingToFormData,
   updateReading,
-  usesLocalData,
   usesSupabase,
 } from "./lib/store";
 import { useAuth } from "./lib/auth";
@@ -156,7 +155,6 @@ function App() {
 
       <Header
         count={readings.length}
-        localDemo={usesLocalData}
         username={usesSupabase ? username : null}
         onSignOut={usesSupabase ? handleSignOut : null}
         onNewReading={() => setFormTarget({ reading: null })}
@@ -190,11 +188,9 @@ function App() {
             </p>
             <p className="mx-auto mt-2 max-w-sm text-sm text-ink-500">
               {loadError}
-              {usesLocalData
-                ? ""
-                : usesSupabase
-                  ? " Verifique sua conexão e tente de novo."
-                  : " Verifique se o servidor está rodando e tente de novo."}
+              {usesSupabase
+                ? " Verifique sua conexão e tente de novo."
+                : " Verifique se o servidor está rodando e tente de novo."}
             </p>
             <button
               type="button"

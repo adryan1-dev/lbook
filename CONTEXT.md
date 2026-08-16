@@ -3,14 +3,6 @@
 Glossário do projeto. Só vocabulário: o que cada termo **é**, e as palavras que deixamos de usar.
 Detalhe de implementação e spec não moram aqui.
 
-## Demo
-
-A versão pública do Lbook (GitHub Pages): mesma Estante e mesma interface, sem login.
-Cada visitante mantém a própria Estante no navegador — os dados não são compartilhados entre pessoas.
-Na primeira visita, o app pode mostrar leituras de exemplo para explorar o produto.
-
-_Avoid_: chamar o demo de “versão beta”, “staging” ou “produção full stack”.
-
 ## App
 
 A versão com conta (Vercel + Supabase): login por email ou **nome de usuário**, Estante na nuvem.
@@ -47,7 +39,7 @@ _Avoid_: “ver senha”, “toggle”, “eye”, “mostrar/esconder” na UI.
 Ambiente local para construir o Lbook. Com `client/.env` (Supabase), `npm run dev:app` espelha o **App**.
 Com `npm run dev` na raiz, sobe client + Express + Postgres local (modo legado, sem login).
 
-_Avoid_: tratar desenvolvimento local como sinônimo do demo público ou do App em produção.
+_Avoid_: tratar desenvolvimento local como sinônimo do App em produção.
 
 ## Leitura
 
@@ -117,10 +109,3 @@ _Avoid_: "nota geral" como sinônimo de qualquer categoria isolada.
 A média aritmética das quatro categorias, com uma casa decimal. Persistida como `final_rating`.
 
 _Avoid_: nota final (colide com a categoria Final).
-
-## Dados só neste navegador
-
-Aviso discreto no header do **Demo**: deixa claro que a Estante vive apenas
-no navegador daquele visitante. Não aparece no **App** (dados na nuvem).
-
-_Avoid_: “modo offline”, “sem servidor” como título; “localStorage” na UI.

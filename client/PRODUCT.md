@@ -16,7 +16,7 @@ Secondary: recruiters evaluating Lbook as a portfolio piece. They are not Estant
 
 Lbook is a personal reading notebook. It lets someone catalog readings, organize them by status, rate them, write reviews, and track progress on one Estante.
 
-Success for the owner: the shelf stays accurate and easy to reopen. Success for the portfolio: a recruiter can use the public demo and understand the product without an account.
+Success for the owner: the shelf stays accurate and easy to reopen. Success for the portfolio: a recruiter can create an account and use the real App.
 
 ## Positioning
 
@@ -24,8 +24,7 @@ The unit is a Leitura, not a book listing. It covers the whole journey: quero co
 
 ## Operating Context
 
-- App (Vercel + Supabase): signed-in Estante in the cloud; one account = one shelf; RLS isolation.
-- Demo (GitHub Pages): same UI, no login, data only in that browser; first visit may show example readings. This is the URL recruiters are most likely to open.
+- App (Vercel + Supabase): signed-in Estante in the cloud; one account = one shelf; RLS isolation. This is the only public product surface.
 - Legacy local (Express + PostgreSQL, no login) is a development leftover, not a product surface.
 - Copy and UI are Brazilian Portuguese.
 - Reopening the Estante is the primary task; adding a Leitura is secondary.
@@ -49,10 +48,9 @@ Terminology is product law, not style: Leitura is the list item (never “livro�
 
 ## Evidence on Hand
 
-- Public demo: https://adryan1-dev.github.io/lbook/
+- App: https://lbook-woad.vercel.app
 - Glossary: CONTEXT.md (repo root)
 - Product description: README.md
-- Example readings used to seed a first visit
 - No testimonials, user counts, press, or case studies exist — do not invent them
 
 ## Product Principles

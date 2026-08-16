@@ -1,6 +1,6 @@
 import { BookPlus, LogOut } from "./icons";
 
-function Header({ count, localDemo = false, username, onSignOut, onNewReading }) {
+function Header({ count, username, onSignOut, onNewReading }) {
   return (
     <header className="sticky top-0 z-10 border-b border-mist-200 bg-mist-50/85 backdrop-blur-sm">
       <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-3 sm:px-6">
@@ -16,11 +16,7 @@ function Header({ count, localDemo = false, username, onSignOut, onNewReading })
               </span>
             ) : null}
           </h1>
-          {localDemo ? (
-            <p className="mt-0.5 text-xs text-ink-500">
-              Dados só neste navegador
-            </p>
-          ) : username ? (
+          {username ? (
             <p className="mt-0.5 truncate text-xs text-ink-500">{username}</p>
           ) : null}
         </div>

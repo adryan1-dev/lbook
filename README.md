@@ -10,11 +10,9 @@
 
 Caderno pessoal de leituras: catalogar o que você tem, organizar por status, avaliar, escrever resenhas e acompanhar o progresso — tudo em uma Estante simples.
 
-**Demo:** [adryan1-dev.github.io/lbook](https://adryan1-dev.github.io/lbook/) — estante no navegador, sem login.
+**App:** [lbook-woad.vercel.app](https://lbook-woad.vercel.app) — conta + nuvem (Supabase); cada pessoa tem a própria Estante.
 
-**App (conta + nuvem):** [lbook-woad.vercel.app](https://lbook-woad.vercel.app) — Supabase, cada pessoa tem a própria Estante.
-
-[Visão geral](#visão-geral) · [Modos](#modos) · [App com login](#app-com-login) · [Demo](#demo) · [Stack](#stack) · [Começando](#começando) · [Arquitetura](#arquitetura) · [Estrutura](#estrutura-do-projeto) · [Glossário](#glossário)
+[Visão geral](#visão-geral) · [Modos](#modos) · [App com login](#app-com-login) · [Stack](#stack) · [Começando](#começando) · [Arquitetura](#arquitetura) · [Estrutura](#estrutura-do-projeto) · [Glossário](#glossário)
 
 ---
 
@@ -25,7 +23,6 @@ Um único `main` compartilha UI e componentes; a persistência muda no build:
 | Modo | URL | Persistência | Login |
 | --- | --- | --- | --- |
 | **App** | [lbook-woad.vercel.app](https://lbook-woad.vercel.app) | Supabase Postgres + Storage | Sim — estante por conta |
-| **Demo** | GitHub Pages | `localStorage` (`VITE_DATA_SOURCE=local`) | Não |
 | **Legado** | `npm run dev` (local) | Express + PostgreSQL local | Não |
 
 ---
@@ -66,24 +63,16 @@ Abra `http://localhost:5173`, crie uma conta e use a Estante.
 
 ---
 
-## Demo
-
-A URL pública é o frontend estático no GitHub Pages. Cada visitante tem a própria Estante no `localStorage` (sem conta, sem banco). Na primeira visita o app popula algumas leituras de exemplo.
-
-O deploy do demo roda em push para `main` (`.github/workflows/deploy.yml`). Na primeira vez, em **Settings → Pages → Source**, escolha **GitHub Actions**.
-
----
-
 ## Stack
 
-| Camada | App (produção) | Demo | Legado (local) |
-| --- | --- | --- | --- |
-| UI | React + Vite | React + Vite | React + Vite |
-| Estilo | Tailwind CSS v4 | Tailwind CSS v4 | Tailwind CSS v4 |
-| Auth | Supabase Auth | — | — |
-| Dados | Supabase Postgres + RLS | `localStorage` | PostgreSQL (`pg`) |
-| Capas | Supabase Storage | base64 no browser | Multer → `server/uploads` |
-| Hospedagem | Vercel | GitHub Pages | localhost |
+| Camada | App (produção) | Legado (local) |
+| --- | --- | --- |
+| UI | React + Vite | React + Vite |
+| Estilo | Tailwind CSS v4 | Tailwind CSS v4 |
+| Auth | Supabase Auth | — |
+| Dados | Supabase Postgres + RLS | PostgreSQL (`pg`) |
+| Capas | Supabase Storage | Multer → `server/uploads` |
+| Hospedagem | Vercel | localhost |
 
 ---
 
@@ -107,7 +96,7 @@ A aba **Minha biblioteca** lista **todas** as leituras da conta e inclui busca p
 - **Avaliação** — quatro categorias (Enredo, Personagens, Edição, Final) em Lendo/Lido
 - **Resenha** — texto livre em qualquer status
 - **Progresso** — página atual / total e barra de % apenas em Lendo
-- **Capa** — upload de imagem (Storage no App; local no demo)
+- **Capa** — upload de imagem (Supabase Storage)
 - **CRUD** — criar, editar, trocar status e excluir
 
 ---
@@ -166,11 +155,10 @@ flowchart LR
   RLS --> DB
 ```
 
-### Demo / Legado
+### Legado (local)
 
 ```text
-Demo:  Browser → localStorage
-Legado: Browser → Vite proxy → Express → PostgreSQL + uploads/
+Browser → Vite proxy → Express → PostgreSQL + uploads/
 ```
 
 ### Regras de negócio (resumo)
@@ -195,7 +183,7 @@ lbook/
 │   │   │   ├── PasswordField.jsx
 │   │   │   └── …
 │   │   └── lib/
-│   │       ├── store.js        # local | supabase | api
+│   │       ├── store.js        # supabase | api
 │   │       ├── supabaseStore.js
 │   │       ├── auth.jsx
 │   │       ├── identity.js     # username + senha
@@ -207,7 +195,6 @@ lbook/
 │   ├── migrations/002_profiles_username.sql
 │   └── README.md
 ├── vercel.json                 # Deploy do App
-├── .github/workflows/          # GitHub Pages (demo)
 ├── server/                     # Express legado (dev local)
 ├── CONTEXT.md
 └── package.json
@@ -240,7 +227,6 @@ Detalhes: [`CONTEXT.md`](CONTEXT.md).
 | “Sessão expirada” | Entre de novo; verifique `VITE_SUPABASE_*` na Vercel |
 | Estante vazia para todos | Rode a migration SQL; confira RLS |
 | Capa não aparece (App) | Bucket `covers` criado; policies de Storage |
-| Demo não persiste entre dispositivos | Esperado — demo usa só o navegador |
 | “Backend offline” (legado) | `npm run dev` + `DATABASE_URL` em `server/.env` |
 
 ---
