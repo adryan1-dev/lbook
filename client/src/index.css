@@ -69,6 +69,12 @@
     -webkit-tap-highlight-color: transparent;
   }
 
+  /* O olho nativo do Edge compete com o alternador do app. */
+  input::-ms-reveal,
+  input::-ms-clear {
+    display: none;
+  }
+
   body {
     margin: 0;
     min-height: 100dvh;
@@ -161,6 +167,46 @@
       rgb(38 51 74 / 5%) 9%,
       transparent 14%
     );
+  }
+
+  .lbook-map-pin {
+    position: relative;
+    width: 22px;
+    height: 22px;
+    padding: 0;
+    border: 2px solid white;
+    border-radius: 999px;
+    background: var(--color-mist-700);
+    box-shadow: var(--shadow-cover);
+    cursor: pointer;
+  }
+
+  .lbook-map-pin span {
+    position: absolute;
+    top: -0.45rem;
+    right: -0.5rem;
+    display: flex;
+    min-width: 1.125rem;
+    height: 1.125rem;
+    align-items: center;
+    justify-content: center;
+    padding: 0 0.25rem;
+    border-radius: 999px;
+    background: var(--color-blush-600);
+    color: white;
+    font-size: 0.6875rem;
+    font-weight: 600;
+  }
+
+  .lbook-map-popup .maplibregl-popup-content {
+    padding: 0.75rem 0.85rem;
+    border: 1px solid var(--color-mist-200);
+    border-radius: 1.25rem;
+    box-shadow: var(--shadow-panel);
+  }
+
+  .lbook-map-popup .maplibregl-popup-tip {
+    border-top-color: white;
   }
 }
 

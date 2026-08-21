@@ -61,6 +61,16 @@ function parseStatus(raw) {
   return raw;
 }
 
+function parseOriginCountry(raw) {
+  const code = String(raw || "")
+    .trim()
+    .toUpperCase();
+  if (!/^[A-Z]{2}$/.test(code)) {
+    return null;
+  }
+  return code;
+}
+
 function averageRating(story, characters, edition, finalValue) {
   return (
     (Number(story) + Number(characters) + Number(edition) + Number(finalValue)) /
@@ -168,6 +178,9 @@ async function ensureSchema() {
   await pool.query(
     `ALTER TABLE books ADD COLUMN IF NOT EXISTS total_pages INTEGER DEFAULT 0`,
   );
+  await pool.query(
+    `ALTER TABLE books ADD COLUMN IF NOT EXISTS origin_country VARCHAR(2)`,
+  );
 }
 
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
@@ -175,7 +188,7 @@ app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 app.get("/api/books", async (req, res) => {
   try {
     const result = await pool.query(
-      "SELECT id, title, author, image_url, story, characters, edition, final_score AS final, review, final_rating, status, current_page, total_pages, created_at FROM books ORDER BY id DESC",
+      "SELECT id, title, author, image_url, story, characters, edition, final_score AS final, review, final_rating, status, current_page, total_pages, origin_country, created_at FROM books ORDER BY id DESC",
     );
     res.json(result.rows);
   } catch (error) {
@@ -204,9 +217,11 @@ app.post("/api/books", upload.single("image"), async (req, res) => {
       ratings.final,
     );
 
+    const originCountry = parseOriginCountry(req.body.origin_country);
+
     const result = await pool.query(
-      `INSERT INTO books (title, author, image_url, story, characters, edition, final_score, review, final_rating, status, current_page, total_pages)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+      `INSERT INTO books (title, author, image_url, story, characters, edition, final_score, review, final_rating, status, current_page, total_pages, origin_country)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
        RETURNING *`,
       [
         title,
@@ -221,6 +236,7 @@ app.post("/api/books", upload.single("image"), async (req, res) => {
         status,
         pages.currentPage,
         pages.totalPages,
+        originCountry,
       ],
     );
 
@@ -260,6 +276,8 @@ app.put("/api/books/:id", upload.single("image"), async (req, res) => {
     );
     const imageUrl = req.file ? `/uploads/${req.file.filename}` : null;
 
+    const originCountry = parseOriginCountry(req.body.origin_country);
+
     const result = await pool.query(
       `UPDATE books
        SET title = $1,
@@ -273,8 +291,9 @@ app.put("/api/books/:id", upload.single("image"), async (req, res) => {
            status = $9,
            current_page = $10,
            total_pages = $11,
-           image_url = COALESCE($12, image_url)
-       WHERE id = $13
+           image_url = COALESCE($12, image_url),
+           origin_country = $13
+       WHERE id = $14
        RETURNING *`,
       [
         title,
@@ -289,6 +308,7 @@ app.put("/api/books/:id", upload.single("image"), async (req, res) => {
         pages.currentPage,
         pages.totalPages,
         imageUrl,
+        originCountry,
         id,
       ],
     );

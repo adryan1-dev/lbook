@@ -1,40 +1,54 @@
-import { useCallback, useEffect, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useState } from "react";
 import {
   createReading,
   deleteReading,
+  getActiveShareLink,
   listReadings,
   readingToFormData,
+  revokeShareLink,
+  saveShareLink,
   updateReading,
-  usesLocalData,
   usesSupabase,
 } from "./lib/store";
 import { useAuth } from "./lib/auth";
 import { countByStatus, filterBySearch, labelOfStatus } from "./lib/readings";
+import { parsePath, pathForView } from "./lib/routes";
 import AuthScreen from "./components/AuthScreen";
 import ChooseUsernameScreen from "./components/ChooseUsernameScreen";
 import ConfirmDialog from "./components/ConfirmDialog";
 import Header from "./components/Header";
+import ListsView from "./components/ListsView";
 import ReadingDetailModal from "./components/ReadingDetailModal";
 import ReadingFormModal from "./components/ReadingFormModal";
 import SearchBar from "./components/SearchBar";
+import SharePage from "./components/SharePage";
 import Shelf from "./components/Shelf";
 import StatusTabs from "./components/StatusTabs";
+import { Refresh } from "./components/icons";
+
+const MapView = lazy(() => import("./components/MapView"));
 
 function App() {
   const { user, username, loading: authLoading, needsUsername, signOut } =
     useAuth();
+  const [route, setRoute] = useState(() =>
+    parsePath(window.location.pathname),
+  );
   const [readings, setReadings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState("");
   const [feedback, setFeedback] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const [shareLink, setShareLink] = useState(null);
+  const [flyToCountry, setFlyToCountry] = useState(null);
 
   const [selectedId, setSelectedId] = useState(null);
   const [formTarget, setFormTarget] = useState(null);
   const [pendingDelete, setPendingDelete] = useState(null);
   const [deleting, setDeleting] = useState(false);
 
+  const view = route.name;
   const selectedReading = readings.find((item) => item.id === selectedId);
   const statusCounts = countByStatus(readings);
   const hasSearch = Boolean(searchQuery.trim());
@@ -43,6 +57,18 @@ function App() {
       ? readings
       : readings.filter((item) => item.status === statusFilter);
   const visibleReadings = filterBySearch(byStatus, searchQuery);
+
+  const go = useCallback((name) => {
+    const path = pathForView(name);
+    window.history.pushState({}, "", path);
+    setRoute(parsePath(path));
+  }, []);
+
+  useEffect(() => {
+    const onPop = () => setRoute(parsePath(window.location.pathname));
+    window.addEventListener("popstate", onPop);
+    return () => window.removeEventListener("popstate", onPop);
+  }, []);
 
   const loadShelf = useCallback(async () => {
     setLoading(true);
@@ -56,12 +82,27 @@ function App() {
     }
   }, []);
 
+  const loadShareLink = useCallback(async () => {
+    if (!usesSupabase) {
+      return;
+    }
+    try {
+      setShareLink(await getActiveShareLink());
+    } catch {
+      setShareLink(null);
+    }
+  }, []);
+
   useEffect(() => {
     if (usesSupabase && (authLoading || !user)) {
       return;
     }
+    if (view === "share") {
+      return;
+    }
     loadShelf();
-  }, [loadShelf, authLoading, user]);
+    loadShareLink();
+  }, [loadShelf, loadShareLink, authLoading, user, view]);
 
   useEffect(() => {
     if (!feedback) {
@@ -73,10 +114,15 @@ function App() {
 
   const handleSubmit = async (payload) => {
     const editing = formTarget?.reading;
+    const returnToMapa = formTarget?.afterSave === "mapa";
 
     if (editing) {
-      await updateReading(editing.id, payload);
+      const updated = await updateReading(editing.id, payload);
       setFeedback(`“${editing.title}” foi atualizado.`);
+      if (returnToMapa && updated.originCountry) {
+        go("mapa");
+        setFlyToCountry(updated.originCountry);
+      }
     } else {
       await createReading(payload);
       setFeedback("Leitura adicionada à estante.");
@@ -121,10 +167,16 @@ function App() {
       setSelectedId(null);
       setFormTarget(null);
       setPendingDelete(null);
+      setShareLink(null);
+      go("estante");
     } catch (error) {
       setFeedback(error.message);
     }
   };
+
+  if (view === "share") {
+    return <SharePage token={route.token} />;
+  }
 
   if (usesSupabase) {
     if (authLoading) {
@@ -155,8 +207,11 @@ function App() {
 
       <Header
         count={readings.length}
-        localDemo={usesLocalData}
         username={usesSupabase ? username : null}
+        view={view}
+        onGoEstante={() => go("estante")}
+        onGoMapa={() => go("mapa")}
+        onGoListas={() => go("listas")}
         onSignOut={usesSupabase ? handleSignOut : null}
         onNewReading={() => setFormTarget({ reading: null })}
       />
@@ -169,7 +224,7 @@ function App() {
           {feedback}
         </p>
 
-        {feedback ? (
+        {feedback && view !== "listas" ? (
           <p
             aria-hidden="true"
             className="mb-6 rounded-2xl border border-blush-200 bg-blush-100 px-4 py-3 text-sm text-ink-700"
@@ -189,20 +244,53 @@ function App() {
             </p>
             <p className="mx-auto mt-2 max-w-sm text-sm text-ink-500">
               {loadError}
-              {usesLocalData
-                ? ""
-                : usesSupabase
-                  ? " Verifique sua conexão e tente de novo."
-                  : " Verifique se o servidor está rodando e tente de novo."}
+              {usesSupabase
+                ? " Verifique sua conexão e tente de novo."
+                : " Verifique se o servidor está rodando e tente de novo."}
             </p>
             <button
               type="button"
               onClick={loadShelf}
-              className="mt-6 rounded-full border border-ink-400/50 px-5 py-2.5 text-sm font-semibold text-ink-700 transition duration-150 ease-out hover:bg-white"
+              className="mt-6 inline-flex items-center gap-1.5 rounded-full border border-ink-400/50 px-5 py-2.5 text-sm font-semibold text-ink-700 transition duration-150 ease-out hover:bg-white"
             >
+              <Refresh className="size-4" />
               Tentar de novo
             </button>
           </div>
+        ) : view === "mapa" ? (
+          <Suspense
+            fallback={
+              <p className="py-16 text-center text-sm text-ink-500">
+                Abrindo o mapa…
+              </p>
+            }
+          >
+            <MapView
+              readings={readings}
+              flyToCountry={flyToCountry}
+              onFlyHandled={() => setFlyToCountry(null)}
+              onOpenReading={(reading) => setSelectedId(reading.id)}
+              onAddCountry={(reading) =>
+                setFormTarget({ reading, afterSave: "mapa" })
+              }
+            />
+          </Suspense>
+        ) : view === "listas" ? (
+          <ListsView
+            readings={readings}
+            shareLink={shareLink}
+            onSaveLink={async (flags) => {
+              const saved = await saveShareLink(flags);
+              setShareLink(saved);
+              setFeedback("Link de lista atualizado.");
+              return saved;
+            }}
+            onRevokeLink={async () => {
+              await revokeShareLink();
+              setShareLink(null);
+              setFeedback("Link de lista revogado.");
+            }}
+          />
         ) : (
           <div className="flex flex-col gap-6">
             {readings.length > 0 ? (

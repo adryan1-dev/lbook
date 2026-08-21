@@ -1,15 +1,17 @@
 import * as api from "./api";
-import * as local from "./localStore";
 import * as supabaseStore from "./supabaseStore";
 import { isSupabaseConfigured } from "./supabase";
 
-export const usesLocalData = import.meta.env.VITE_DATA_SOURCE === "local";
-export const usesSupabase = !usesLocalData && isSupabaseConfigured;
+export const usesSupabase = isSupabaseConfigured;
 
-const impl = usesLocalData ? local : usesSupabase ? supabaseStore : api;
+const impl = usesSupabase ? supabaseStore : api;
 
 export const listReadings = impl.listReadings;
 export const createReading = impl.createReading;
 export const updateReading = impl.updateReading;
 export const deleteReading = impl.deleteReading;
+export const getActiveShareLink = impl.getActiveShareLink;
+export const saveShareLink = impl.saveShareLink;
+export const revokeShareLink = impl.revokeShareLink;
+export const fetchSharedLists = impl.fetchSharedLists;
 export { readingToFormData } from "./api";

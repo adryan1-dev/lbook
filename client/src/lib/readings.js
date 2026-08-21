@@ -1,3 +1,5 @@
+import { normalizeCountryCode } from "./countries";
+
 export const RATING_CATEGORIES = [
   {
     key: "story",
@@ -134,6 +136,9 @@ export function toReading(book) {
     status,
     currentPage: Number(book.current_page) || 0,
     totalPages: Number(book.total_pages) || 0,
+    originCountry: normalizeCountryCode(
+      book.origin_country || book.originCountry,
+    ),
     ratings: {
       story: book.story || 0,
       characters: book.characters || 0,

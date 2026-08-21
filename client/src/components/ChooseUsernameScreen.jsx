@@ -1,5 +1,6 @@
 import { useId, useState } from "react";
 import { useAuth } from "../lib/auth";
+import { LogOut } from "./icons";
 
 const fieldClassName =
   "w-full rounded-xl border border-mist-200 bg-mist-50 px-3 py-2.5 text-ink-900 transition duration-150 ease-out placeholder:text-ink-400 focus:border-mist-500 focus:bg-white focus:outline-none focus:ring-3 focus:ring-mist-400/35";
@@ -74,8 +75,9 @@ function ChooseUsernameScreen() {
         <button
           type="button"
           onClick={() => signOut()}
-          className="mt-4 w-full text-center text-sm font-semibold text-mist-700 hover:text-mist-600"
+          className="mt-4 inline-flex w-full items-center justify-center gap-1.5 text-sm font-semibold text-mist-700 hover:text-mist-600"
         >
+          <LogOut className="size-4" />
           Sair
         </button>
       </div>

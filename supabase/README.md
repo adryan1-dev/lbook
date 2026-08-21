@@ -4,6 +4,7 @@ Rode, nesta ordem, no **SQL Editor** do dashboard Supabase:
 
 1. [`migrations/001_books_auth.sql`](migrations/001_books_auth.sql) — estante + capas
 2. [`migrations/002_profiles_username.sql`](migrations/002_profiles_username.sql) — nome de usuário único e login por handle
+3. [`migrations/003_origin_and_share_lists.sql`](migrations/003_origin_and_share_lists.sql) — país de origem + link de lista
 
 ## Auth (Dashboard)
 
