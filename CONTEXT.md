@@ -43,8 +43,8 @@ _Avoid_: tratar desenvolvimento local como sinônimo do App em produção.
 
 ## Leitura
 
-Registro pessoal de uma obra na Estante: título, autor, capa, status de leitura,
-e — quando o status permitir — quatro notas e uma resenha.
+Registro pessoal de uma obra na Estante: título, autor, capa, país de origem,
+status de leitura, e — quando o status permitir — quatro notas e uma resenha.
 É a unidade da Estante — cada card é uma Leitura, não um livro.
 Inclui obras que você quer comprar, já possui, está lendo, já leu ou abandonou.
 
@@ -109,3 +109,27 @@ _Avoid_: "nota geral" como sinônimo de qualquer categoria isolada.
 A média aritmética das quatro categorias, com uma casa decimal. Persistida como `final_rating`.
 
 _Avoid_: nota final (colide com a categoria Final).
+
+## País de origem
+
+País da obra (publicação / origem cultural), gravado em cada Leitura. Alimenta os pins do **Mapa**. Não é o lugar da compra nem o cenário da história.
+
+_Avoid_: localização, geolocalização, nacionalidade do autor, “onde eu comprei”.
+
+## Mapa
+
+Vista da Estante com um mapa arrastável. Cada pin é um país de origem; várias Leituras no mesmo país compartilham o pin. O balão mostra capa, título, autor e, quando existir, a média da leitura.
+
+_Avoid_: feed mundial, mapa social, “explorar leitores”.
+
+## Já tenho
+
+Lista das Leituras que a conta já possui: Minha biblioteca, Lendo, Lido e Abandonei. Serve para alguém que vai presentear não comprar o que já está na Estante.
+
+_Avoid_: “owned”, “have list”, tratar Já tenho como um status novo.
+
+## Link de lista
+
+Endereço opt-in que mostra só Quero comprar e/ou Já tenho, à escolha de quem gera. Quem abre não precisa de conta. Sem notas e sem resenha. O mesmo endereço continua válido se as listas mudarem; revogar encerra o acesso.
+
+_Avoid_: perfil público, estante compartilhada, feed.

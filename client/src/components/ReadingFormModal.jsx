@@ -9,6 +9,7 @@ import {
   statusAllowsRatings,
   statusShowsProgress,
 } from "../lib/readings";
+import { COUNTRIES } from "../lib/countries";
 import ConfirmDialog from "./ConfirmDialog";
 import Modal from "./Modal";
 import ReadingProgress from "./ReadingProgress";
@@ -35,6 +36,9 @@ function ReadingFormModal({ reading, onSubmit, onClose }) {
   );
   const [ratings, setRatings] = useState(reading?.ratings ?? emptyRatings);
   const [cover, setCover] = useState(null);
+  const [originCountry, setOriginCountry] = useState(
+    reading?.originCountry ?? "",
+  );
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [confirmingDiscard, setConfirmingDiscard] = useState(false);
@@ -55,6 +59,7 @@ function ReadingFormModal({ reading, onSubmit, onClose }) {
     status !== (reading?.status ?? DEFAULT_STATUS) ||
     Number(currentPage) !== (reading?.currentPage ?? 0) ||
     Number(totalPages) !== (reading?.totalPages ?? 0) ||
+    originCountry !== (reading?.originCountry ?? "") ||
     cover !== null ||
     RATING_CATEGORIES.some((category) => {
       return ratings[category.key] !== (reading?.ratings?.[category.key] ?? 0);
@@ -97,6 +102,7 @@ function ReadingFormModal({ reading, onSubmit, onClose }) {
     payload.append("author", author.trim());
     payload.append("review", review.trim());
     payload.append("status", status);
+    payload.append("origin_country", originCountry);
     payload.append("current_page", parsedCurrent);
     payload.append("total_pages", parsedTotal);
     for (const category of RATING_CATEGORIES) {
@@ -178,6 +184,28 @@ function ReadingFormModal({ reading, onSubmit, onClose }) {
                 </option>
               ))}
             </select>
+          </label>
+
+          <label className="flex flex-col gap-1.5">
+            <span className="text-sm font-semibold text-ink-700">
+              País de origem
+            </span>
+            <select
+              name="origin_country"
+              value={originCountry}
+              onChange={(event) => setOriginCountry(event.target.value)}
+              className={fieldClassName}
+            >
+              <option value="">Não informado</option>
+              {COUNTRIES.map((country) => (
+                <option key={country.code} value={country.code}>
+                  {country.name}
+                </option>
+              ))}
+            </select>
+            <span className="text-xs text-ink-500">
+              País da obra, não o lugar onde você comprou.
+            </span>
           </label>
 
           {showsProgress ? (

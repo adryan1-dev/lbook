@@ -29,12 +29,13 @@ The unit is a Leitura, not a book listing. It covers the whole journey: quero co
 - Copy and UI are Brazilian Portuguese.
 - Reopening the Estante is the primary task; adding a Leitura is secondary.
 - Shared shelf (couple/group) is a stated future idea, not shipped.
+- Privacy is the default. A **Link de lista** is an opt-in exception: the owner chooses Quero comprar and/or Já tenho; the public page never shows reviews or ratings. It is not a shared Estante.
 
 ## Capabilities and Constraints
 
-Shipped: account with unique username; sign-in with email or username; statuses (Minha biblioteca, Quero comprar, Lendo, Lido, Abandonei); search by title/author; four rating categories on Lendo/Lido; free-text review; page progress only while Lendo; cover upload; full CRUD.
+Shipped: account with unique username; sign-in with email or username; statuses (Minha biblioteca, Quero comprar, Lendo, Lido, Abandonei); search by title/author; four rating categories on Lendo/Lido; free-text review; page progress only while Lendo; cover upload; full CRUD; País de origem; Mapa with country pins; copy/print of Quero comprar and Já tenho; opt-in Link de lista.
 
-Not shipped: shared Estante, advanced filters, ranking/favorites, reading history/stats. Do not design or copy as if they exist.
+Not shipped: shared Estante, advanced filters, ranking/favorites, reading history/stats, city-level pins, ISBN catalog. Do not design or copy as if they exist.
 
 Terminology is product law, not style: Leitura is the list item (never “livro”), Estante is the home surface, Minha biblioteca is both the full-catalog tab and the default owned-unread status, Edição is physical-object quality (not the edit action), Média da leitura is the four-category average (not “nota final”).
 
@@ -57,6 +58,6 @@ Terminology is product law, not style: Leitura is the list item (never “livro�
 
 1. The Estante is the product; adding a Leitura serves it, not the other way around.
 2. A Leitura is a personal journey, not a catalog record — status, notes, and the physical edition belong together.
-3. Privacy is the default: nobody sees another person's shelf.
+3. Privacy is the default: nobody sees another person's Estante unless the owner creates a Link de lista.
 4. Speak the product's words. If a label could belong to any reading app, it is wrong.
 5. Recruiter attention is earned by a real, usable notebook — never by fake scale or social features.
