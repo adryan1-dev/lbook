@@ -94,9 +94,10 @@ function formDataToFields(formData) {
 
 async function requireUser() {
   const {
-    data: { user },
+    data: { session },
     error,
-  } = await supabase.auth.getUser();
+  } = await supabase.auth.getSession();
+  const user = session?.user;
 
   if (error || !user) {
     throw new Error("Sessão expirada. Entre de novo.");
@@ -289,7 +290,6 @@ function toShareLink(row) {
 }
 
 export async function getActiveShareLink() {
-  await requireUser();
   const { data, error } = await supabase
     .from("share_links")
     .select("token, include_quero_comprar, include_owned")

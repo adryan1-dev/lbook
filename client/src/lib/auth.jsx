@@ -21,25 +21,7 @@ export function AuthProvider({ children }) {
   const [username, setUsername] = useState(null);
   const [loading, setLoading] = useState(isSupabaseConfigured);
   const [profileLoading, setProfileLoading] = useState(false);
-
-  const loadProfile = useCallback(async (userId) => {
-    if (!userId) {
-      setUsername(null);
-      return;
-    }
-    setProfileLoading(true);
-    const { data, error } = await supabase
-      .from("profiles")
-      .select("username")
-      .eq("id", userId)
-      .maybeSingle();
-    if (error) {
-      setUsername(null);
-    } else {
-      setUsername(data?.username ?? null);
-    }
-    setProfileLoading(false);
-  }, []);
+  const userId = session?.user?.id ?? null;
 
   useEffect(() => {
     if (!isSupabaseConfigured) {
@@ -47,36 +29,45 @@ export function AuthProvider({ children }) {
       return;
     }
 
-    let mounted = true;
-
-    supabase.auth.getSession().then(({ data: { session: current } }) => {
-      if (!mounted) {
-        return;
-      }
-      setSession(current);
-      if (current?.user?.id) {
-        setProfileLoading(true);
-      }
-      setLoading(false);
-      loadProfile(current?.user?.id);
-    });
-
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, nextSession) => {
       setSession(nextSession);
-      if (nextSession?.user?.id) {
-        setProfileLoading(true);
-      }
       setLoading(false);
-      loadProfile(nextSession?.user?.id);
     });
 
     return () => {
-      mounted = false;
       subscription.unsubscribe();
     };
-  }, [loadProfile]);
+  }, []);
+
+  useEffect(() => {
+    if (!userId) {
+      setUsername(null);
+      setProfileLoading(false);
+      return;
+    }
+
+    let cancelled = false;
+    setProfileLoading(true);
+
+    supabase
+      .from("profiles")
+      .select("username")
+      .eq("id", userId)
+      .maybeSingle()
+      .then(({ data, error }) => {
+        if (cancelled) {
+          return;
+        }
+        setUsername(error ? null : (data?.username ?? null));
+        setProfileLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [userId]);
 
   const signIn = useCallback(async (identifier, password) => {
     if (!isSupabaseConfigured) {
@@ -138,21 +129,18 @@ export function AuthProvider({ children }) {
     if (!parsedName.ok) {
       throw new Error(parsedName.error);
     }
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) {
+    if (!userId) {
       throw new Error("Sessão expirada. Entre de novo.");
     }
     const { error } = await supabase.from("profiles").insert({
-      id: user.id,
+      id: userId,
       username: parsedName.username,
     });
     if (error) {
       throw new Error(translateAuthError(error.message));
     }
     setUsername(parsedName.username);
-  }, []);
+  }, [userId]);
 
   const signOut = useCallback(async () => {
     if (!isSupabaseConfigured) {

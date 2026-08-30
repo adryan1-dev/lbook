@@ -49,6 +49,7 @@ function App() {
   const [deleting, setDeleting] = useState(false);
 
   const view = route.name;
+  const userId = user?.id ?? null;
   const selectedReading = readings.find((item) => item.id === selectedId);
   const statusCounts = countByStatus(readings);
   const hasSearch = Boolean(searchQuery.trim());
@@ -94,7 +95,7 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (usesSupabase && (authLoading || !user)) {
+    if (usesSupabase && (authLoading || !userId)) {
       return;
     }
     if (view === "share") {
@@ -102,7 +103,7 @@ function App() {
     }
     loadShelf();
     loadShareLink();
-  }, [loadShelf, loadShareLink, authLoading, user, view]);
+  }, [loadShelf, loadShareLink, authLoading, userId, view]);
 
   useEffect(() => {
     if (!feedback) {
