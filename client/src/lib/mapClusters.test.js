@@ -31,13 +31,10 @@ describe("clusterReadingsByCountry", () => {
       }),
     ]);
 
-    expect(clusters).toHaveLength(2);
+    expect(clusters).toHaveLength(1);
     const unitedStates = clusters.find((cluster) => cluster.code === "US");
-    const brazil = clusters.find((cluster) => cluster.code === "BR");
     expect(unitedStates.readings).toHaveLength(2);
     expect(unitedStates.lat).toBeCloseTo(37.09, 0);
-    expect(brazil.readings).toHaveLength(1);
-    expect(brazil.name).toBe("Brasil");
   });
 
   it("drops Leituras without a country and unknown codes", () => {
@@ -73,6 +70,14 @@ describe("clusterReadingsByCountry", () => {
     expect(wishlist).toHaveLength(1);
     expect(wishlist[0].code).toBe("JP");
     expect(wishlist[0].readings[0].title).toBe("Kafka à beira-mar");
+
+    const library = clusterReadingsByCountry(readings, "all");
+    expect(library.find((cluster) => cluster.code === "JP").readings).toHaveLength(
+      1,
+    );
+    expect(
+      library.find((cluster) => cluster.code === "JP").readings[0].title,
+    ).toBe("1Q84");
   });
 });
 

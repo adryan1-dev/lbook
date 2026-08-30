@@ -1,4 +1,5 @@
 import { countryByCode, normalizeCountryCode } from "./countries";
+import { filterByStatus } from "./readings";
 
 function hasCountry(reading) {
   return Boolean(normalizeCountryCode(reading.originCountry));
@@ -6,13 +7,10 @@ function hasCountry(reading) {
 
 /** Agrupa Leituras com país de origem; o filtro de status recontabiliza o pin. */
 export function clusterReadingsByCountry(readings, statusFilter = "all") {
+  const visible = filterByStatus(readings, statusFilter);
   const clusters = new Map();
 
-  for (const reading of readings) {
-    if (statusFilter !== "all" && reading.status !== statusFilter) {
-      continue;
-    }
-
+  for (const reading of visible) {
     const country = countryByCode(reading.originCountry);
     if (!country) {
       continue;

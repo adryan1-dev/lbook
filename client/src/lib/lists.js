@@ -1,4 +1,4 @@
-const OWNED_STATUSES = new Set(["biblioteca", "lendo", "lido", "abandonei"]);
+import { isOwnedStatus } from "./readings";
 
 export function splitHaveAndWishlist(readings) {
   const queroComprar = [];
@@ -7,7 +7,7 @@ export function splitHaveAndWishlist(readings) {
   for (const reading of readings) {
     if (reading.status === "quero_comprar") {
       queroComprar.push(reading);
-    } else if (OWNED_STATUSES.has(reading.status)) {
+    } else if (isOwnedStatus(reading.status)) {
       jaTenho.push(reading);
     }
   }

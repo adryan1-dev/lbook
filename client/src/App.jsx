@@ -11,7 +11,12 @@ import {
   usesSupabase,
 } from "./lib/store";
 import { useAuth } from "./lib/auth";
-import { countByStatus, filterBySearch, labelOfStatus } from "./lib/readings";
+import {
+  countByStatus,
+  filterBySearch,
+  filterByStatus,
+  labelOfStatus,
+} from "./lib/readings";
 import { parsePath, pathForView } from "./lib/routes";
 import AuthScreen from "./components/AuthScreen";
 import ChooseUsernameScreen from "./components/ChooseUsernameScreen";
@@ -53,10 +58,7 @@ function App() {
   const selectedReading = readings.find((item) => item.id === selectedId);
   const statusCounts = countByStatus(readings);
   const hasSearch = Boolean(searchQuery.trim());
-  const byStatus =
-    statusFilter === "all"
-      ? readings
-      : readings.filter((item) => item.status === statusFilter);
+  const byStatus = filterByStatus(readings, statusFilter);
   const visibleReadings = filterBySearch(byStatus, searchQuery);
 
   const go = useCallback((name) => {

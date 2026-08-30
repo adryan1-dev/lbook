@@ -1,6 +1,6 @@
 import { READING_STATUSES } from "../lib/readings";
 
-/** Minha biblioteca = catálogo completo; demais abas = status. */
+/** Minha biblioteca = o que já está na conta; Quero comprar fica na aba própria. */
 const FILTERS = [
   { value: "all", label: "Minha biblioteca" },
   ...READING_STATUSES.filter((status) => status.value !== "biblioteca"),
