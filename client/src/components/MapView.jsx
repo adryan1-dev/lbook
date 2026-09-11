@@ -9,7 +9,6 @@ import {
   setWorkerUrl,
 } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
-import maplibreWorker from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
 import {
   clusterReadingsByCountry,
   firstWithoutCountry,
@@ -20,9 +19,9 @@ import PinPeek from "./PinPeek";
 import StatusTabs from "./StatusTabs";
 import { Close } from "./icons";
 
-// MapLibre 6 looks for ./maplibre-gl-worker.mjs next to the chunk. Vite never
-// emits that file, so production hits the SPA rewrite and the worker gets HTML.
-setWorkerUrl(maplibreWorker);
+// Serve the official ESM worker + shared sibling. Vite's ?worker&url emits an
+// IIFE, and MapLibre then constructs it as type:"module" — tiles never parse.
+setWorkerUrl(`${import.meta.env.BASE_URL}assets/maplibre-gl-worker.mjs`);
 
 const MAP_STYLE = "https://tiles.openfreemap.org/styles/positron";
 
