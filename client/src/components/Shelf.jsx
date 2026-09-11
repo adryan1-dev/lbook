@@ -1,5 +1,6 @@
 import { labelOfStatus } from "../lib/readings";
 import ReadingCard from "./ReadingCard";
+import { BookPlus, Library, Search } from "./icons";
 
 function emptyCopy(statusFilter, hasSearch) {
   if (hasSearch) {
@@ -38,7 +39,12 @@ function Shelf({
 
     return (
       <div className="rounded-3xl border border-dashed border-mist-300 bg-white/60 px-6 py-16 text-center">
-        <p className="font-display text-lg font-semibold text-ink-900">
+        {hasSearch ? (
+          <Search className="mx-auto size-8 text-ink-400" />
+        ) : (
+          <Library className="mx-auto size-8 text-ink-400" />
+        )}
+        <p className="mt-4 font-display text-lg font-semibold text-ink-900">
           {copy.title}
         </p>
         <p className="mx-auto mt-2 max-w-sm text-sm text-ink-500">{copy.body}</p>
@@ -46,8 +52,9 @@ function Shelf({
           <button
             type="button"
             onClick={onNewReading}
-            className="mt-6 rounded-full bg-mist-700 px-5 py-2.5 text-sm font-semibold text-white transition duration-150 ease-out hover:bg-mist-600 active:scale-97"
+            className="mt-6 inline-flex items-center gap-1.5 rounded-full bg-mist-700 px-5 py-2.5 text-sm font-semibold text-white transition duration-150 ease-out hover:bg-mist-600 active:scale-97"
           >
+            <BookPlus className="size-4" />
             {copy.cta}
           </button>
         ) : null}

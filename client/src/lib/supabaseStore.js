@@ -1,4 +1,5 @@
 import { supabase } from "./supabase";
+import { normalizeCountryCode } from "./countries";
 import { toReading } from "./readings";
 
 const ALLOWED_STATUSES = [
@@ -93,9 +94,10 @@ function formDataToFields(formData) {
 
 async function requireUser() {
   const {
-    data: { user },
+    data: { session },
     error,
-  } = await supabase.auth.getUser();
+  } = await supabase.auth.getSession();
+  const user = session?.user;
 
   if (error || !user) {
     throw new Error("Sessão expirada. Entre de novo.");
@@ -135,7 +137,7 @@ export async function listReadings() {
   const { data, error } = await supabase
     .from("books")
     .select(
-      "id, title, author, image_url, story, characters, edition, final_score, review, final_rating, status, current_page, total_pages, created_at",
+      "id, title, author, image_url, story, characters, edition, final_score, review, final_rating, status, current_page, total_pages, origin_country, created_at",
     )
     .order("id", { ascending: false });
 
@@ -189,6 +191,7 @@ export async function createReading(formData) {
       status,
       current_page: pages.currentPage,
       total_pages: pages.totalPages,
+      origin_country: normalizeCountryCode(fields.origin_country),
     })
     .select()
     .single();
@@ -252,6 +255,7 @@ export async function updateReading(id, formData) {
       current_page: pages.currentPage,
       total_pages: pages.totalPages,
       image_url: imageUrl,
+      origin_country: normalizeCountryCode(fields.origin_country),
     })
     .eq("id", id)
     .select()
@@ -272,4 +276,99 @@ export async function deleteReading(id) {
   if (error) {
     throw new Error(mapDbError(error));
   }
+}
+
+function toShareLink(row) {
+  if (!row) {
+    return null;
+  }
+  return {
+    token: row.token,
+    includeQueroComprar: Boolean(row.include_quero_comprar),
+    includeOwned: Boolean(row.include_owned),
+  };
+}
+
+export async function getActiveShareLink() {
+  const { data, error } = await supabase
+    .from("share_links")
+    .select("token, include_quero_comprar, include_owned")
+    .is("revoked_at", null)
+    .maybeSingle();
+
+  if (error) {
+    throw new Error(mapDbError(error));
+  }
+
+  return toShareLink(data);
+}
+
+export async function saveShareLink({ includeQueroComprar, includeOwned }) {
+  const user = await requireUser();
+  if (!includeQueroComprar && !includeOwned) {
+    throw new Error("Escolha pelo menos uma lista para o link.");
+  }
+
+  const existing = await getActiveShareLink();
+  if (existing) {
+    const { data, error } = await supabase
+      .from("share_links")
+      .update({
+        include_quero_comprar: includeQueroComprar,
+        include_owned: includeOwned,
+      })
+      .eq("token", existing.token)
+      .select("token, include_quero_comprar, include_owned")
+      .single();
+
+    if (error) {
+      throw new Error(mapDbError(error));
+    }
+
+    return toShareLink(data);
+  }
+
+  const { data, error } = await supabase
+    .from("share_links")
+    .insert({
+      user_id: user.id,
+      include_quero_comprar: includeQueroComprar,
+      include_owned: includeOwned,
+    })
+    .select("token, include_quero_comprar, include_owned")
+    .single();
+
+  if (error) {
+    throw new Error(mapDbError(error));
+  }
+
+  return toShareLink(data);
+}
+
+export async function revokeShareLink() {
+  const existing = await getActiveShareLink();
+  if (!existing) {
+    return;
+  }
+
+  const { error } = await supabase
+    .from("share_links")
+    .update({ revoked_at: new Date().toISOString() })
+    .eq("token", existing.token);
+
+  if (error) {
+    throw new Error(mapDbError(error));
+  }
+}
+
+export async function fetchSharedLists(token) {
+  const { data, error } = await supabase.rpc("get_shared_lists", {
+    p_token: token,
+  });
+
+  if (error) {
+    throw new Error(mapDbError(error));
+  }
+
+  return data && typeof data === "string" ? JSON.parse(data) : data;
 }

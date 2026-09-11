@@ -1,5 +1,6 @@
 import { useId, useState } from "react";
 import { useAuth } from "../lib/auth";
+import PasswordField from "./PasswordField";
 
 const fieldClassName =
   "w-full rounded-xl border border-mist-200 bg-mist-50 px-3 py-2.5 text-ink-900 transition duration-150 ease-out placeholder:text-ink-400 focus:border-mist-500 focus:bg-white focus:outline-none focus:ring-3 focus:ring-mist-400/35";
@@ -128,37 +129,25 @@ function AuthScreen() {
           ) : null}
 
           {mode !== "reset" ? (
-            <label className="flex flex-col gap-1.5">
-              <span className="text-sm font-semibold text-ink-700">Senha</span>
-              <input
-                type="password"
-                name="password"
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
-                required
-                minLength={6}
-                autoComplete={mode === "signIn" ? "current-password" : "new-password"}
-                className={fieldClassName}
-              />
-            </label>
+            <PasswordField
+              label="Senha"
+              name="password"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              autoComplete={mode === "signIn" ? "current-password" : "new-password"}
+              className={fieldClassName}
+            />
           ) : null}
 
           {mode === "signUp" ? (
-            <label className="flex flex-col gap-1.5">
-              <span className="text-sm font-semibold text-ink-700">
-                Confirmar senha
-              </span>
-              <input
-                type="password"
-                name="passwordConfirm"
-                value={passwordConfirm}
-                onChange={(event) => setPasswordConfirm(event.target.value)}
-                required
-                minLength={6}
-                autoComplete="new-password"
-                className={fieldClassName}
-              />
-            </label>
+            <PasswordField
+              label="Confirmar senha"
+              name="passwordConfirm"
+              value={passwordConfirm}
+              onChange={(event) => setPasswordConfirm(event.target.value)}
+              autoComplete="new-password"
+              className={fieldClassName}
+            />
           ) : null}
 
           {error ? (

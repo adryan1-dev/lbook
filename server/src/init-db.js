@@ -67,6 +67,9 @@ async function initDatabase() {
   await pool.query(
     `ALTER TABLE books ADD COLUMN IF NOT EXISTS total_pages INTEGER DEFAULT 0`,
   );
+  await pool.query(
+    `ALTER TABLE books ADD COLUMN IF NOT EXISTS origin_country VARCHAR(2)`,
+  );
 
   console.log("Tabela books pronta.");
   await pool.end();

@@ -1,5 +1,5 @@
 import { useId } from "react";
-import StarIcon from "./StarIcon";
+import { Star } from "./icons";
 
 const STARS = [1, 2, 3, 4, 5];
 
@@ -30,7 +30,8 @@ function StarRating({ label, hint, value, onChange }) {
                 onChange={() => onChange(star)}
                 className="peer sr-only"
               />
-              <StarIcon
+              <Star
+                filled={star <= value}
                 className={`size-6 transition-colors duration-150 ease-out peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-mist-600 ${
                   star <= value ? "text-sun-400" : "text-mist-300"
                 }`}

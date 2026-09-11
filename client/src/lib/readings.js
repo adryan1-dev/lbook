@@ -1,3 +1,5 @@
+import { normalizeCountryCode } from "./countries";
+
 export const RATING_CATEGORIES = [
   {
     key: "story",
@@ -30,6 +32,26 @@ export const READING_STATUSES = [
 ];
 
 export const DEFAULT_STATUS = "biblioteca";
+
+/** Leituras que a conta já possui — a aba Minha biblioteca lista só estas. */
+export const OWNED_STATUSES = new Set([
+  "biblioteca",
+  "lendo",
+  "lido",
+  "abandonei",
+]);
+
+export function isOwnedStatus(status) {
+  return OWNED_STATUSES.has(status);
+}
+
+/** Aba Minha biblioteca (`all`) omite Quero comprar; as outras abas filtram o status. */
+export function filterByStatus(readings, statusFilter) {
+  if (statusFilter === "all") {
+    return readings.filter((reading) => isOwnedStatus(reading.status));
+  }
+  return readings.filter((reading) => reading.status === statusFilter);
+}
 
 export const emptyRatings = {
   story: 0,
@@ -76,10 +98,10 @@ export function averageOf(ratings) {
   return (sum / values.length).toFixed(1);
 }
 
-/** Contagens por status a partir da Estante completa. */
+/** Contagens por status. `all` é Minha biblioteca: o que já está na conta, sem Quero comprar. */
 export function countByStatus(readings) {
   const counts = {
-    all: readings.length,
+    all: 0,
     quero_comprar: 0,
     biblioteca: 0,
     lendo: 0,
@@ -90,6 +112,9 @@ export function countByStatus(readings) {
   for (const reading of readings) {
     if (counts[reading.status] !== undefined) {
       counts[reading.status] += 1;
+    }
+    if (isOwnedStatus(reading.status)) {
+      counts.all += 1;
     }
   }
 
@@ -134,6 +159,9 @@ export function toReading(book) {
     status,
     currentPage: Number(book.current_page) || 0,
     totalPages: Number(book.total_pages) || 0,
+    originCountry: normalizeCountryCode(
+      book.origin_country || book.originCountry,
+    ),
     ratings: {
       story: book.story || 0,
       characters: book.characters || 0,

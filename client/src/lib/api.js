@@ -44,6 +44,7 @@ export function readingToFormData(reading, { status, cover } = {}) {
   payload.append("final", reading.ratings?.final ?? 0);
   payload.append("current_page", reading.currentPage ?? 0);
   payload.append("total_pages", reading.totalPages ?? 0);
+  payload.append("origin_country", reading.originCountry ?? "");
   if (cover) {
     payload.append("image", cover);
   }
@@ -74,4 +75,18 @@ export async function updateReading(id, payload) {
 
 export async function deleteReading(id) {
   await request(`/api/books/${id}`, { method: "DELETE" });
+}
+
+export async function getActiveShareLink() {
+  return null;
+}
+
+export async function saveShareLink() {
+  throw new Error("Link de lista só existe no App com conta.");
+}
+
+export async function revokeShareLink() {}
+
+export async function fetchSharedLists() {
+  return null;
 }
