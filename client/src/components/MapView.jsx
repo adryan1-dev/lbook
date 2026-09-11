@@ -1,16 +1,28 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { LngLatBounds, Map, Marker, NavigationControl, Popup } from "maplibre-gl";
+import {
+  LngLatBounds,
+  Map,
+  Marker,
+  NavigationControl,
+  Popup,
+  setWorkerUrl,
+} from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
+import maplibreWorker from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
 import {
   clusterReadingsByCountry,
   firstWithoutCountry,
   readingsWithoutCountry,
 } from "../lib/mapClusters";
-import { countByStatus } from "../lib/readings";
+import { countByStatus, filterByStatus } from "../lib/readings";
 import PinPeek from "./PinPeek";
 import StatusTabs from "./StatusTabs";
-import { Close, MapPin } from "./icons";
+import { Close } from "./icons";
+
+// MapLibre 6 looks for ./maplibre-gl-worker.mjs next to the chunk. Vite never
+// emits that file, so production hits the SPA rewrite and the worker gets HTML.
+setWorkerUrl(maplibreWorker);
 
 const MAP_STYLE = "https://tiles.openfreemap.org/styles/positron";
 
@@ -43,38 +55,77 @@ function MapView({
   const popupRef = useRef(null);
   const popupNode = useRef(document.createElement("div"));
   const [mapReady, setMapReady] = useState(false);
+  const [mapError, setMapError] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [selectedCode, setSelectedCode] = useState(null);
   const [peekIndex, setPeekIndex] = useState(0);
 
+  const visibleReadings = useMemo(
+    () => filterByStatus(readings, statusFilter),
+    [readings, statusFilter],
+  );
   const clusters = useMemo(
     () => clusterReadingsByCountry(readings, statusFilter),
     [readings, statusFilter],
   );
-  const missingCount = readingsWithoutCountry(readings).length;
-  const emptyTarget = firstWithoutCountry(readings);
+  const missingCount = readingsWithoutCountry(visibleReadings).length;
+  const emptyTarget = firstWithoutCountry(visibleReadings);
   const selected = clusters.find((cluster) => cluster.code === selectedCode);
   const statusCounts = countByStatus(
     readings.filter((reading) => reading.originCountry),
   );
 
   useEffect(() => {
-    const map = new Map({
-      container: mapNode.current,
-      style: MAP_STYLE,
-      center: [10, 20],
-      zoom: 1.4,
-      attributionControl: true,
-    });
+    const node = mapNode.current;
+    if (!node) {
+      return undefined;
+    }
+
+    let map;
+    try {
+      map = new Map({
+        container: node,
+        style: MAP_STYLE,
+        center: [10, 20],
+        zoom: 1.4,
+        attributionControl: true,
+      });
+    } catch (error) {
+      setMapError(error.message || "Não foi possível abrir o mapa.");
+      return undefined;
+    }
+
     map.addControl(new NavigationControl({ showCompass: false }), "top-right");
     mapRef.current = map;
-    map.on("load", () => setMapReady(true));
+
+    const onLoad = () => {
+      map.resize();
+      setMapReady(true);
+      setMapError("");
+    };
+    const onError = (event) => {
+      if (map.loaded()) {
+        return;
+      }
+      const message = event?.error?.message || "O mapa não carregou as tiles.";
+      setMapError(message);
+    };
+
+    map.on("load", onLoad);
+    map.on("error", onError);
+
+    const observer = new ResizeObserver(() => map.resize());
+    observer.observe(node);
 
     return () => {
+      observer.disconnect();
+      map.off("load", onLoad);
+      map.off("error", onError);
       markersRef.current.forEach((marker) => marker.remove());
       popupRef.current?.remove();
       map.remove();
       mapRef.current = null;
+      setMapReady(false);
     };
   }, []);
 
@@ -229,7 +280,7 @@ function MapView({
         }}
       />
 
-      {readings.length > 0 && missingCount > 0 ? (
+      {visibleReadings.length > 0 && missingCount > 0 ? (
         <p className="text-sm text-ink-500">
           {missingCount === 1
             ? "1 leitura ainda sem país de origem."
@@ -237,39 +288,49 @@ function MapView({
         </p>
       ) : null}
 
-      {clusters.length === 0 ? (
-        <div className="rounded-3xl border border-mist-200 bg-white px-6 py-14 text-center">
-          <MapPin className="mx-auto size-8 text-mist-500" />
-          <p className="mt-4 font-display text-lg font-semibold text-ink-900">
-            O mapa ainda não tem pins
-          </p>
-          <p className="mx-auto mt-2 max-w-sm text-sm text-ink-500">
-            Informe o país de origem nas leituras para ver de onde cada obra
-            veio.
-          </p>
-          {emptyTarget ? (
-            <button
-              type="button"
-              onClick={() => onAddCountry(emptyTarget)}
-              className="mt-6 rounded-full bg-mist-700 px-5 py-2.5 text-sm font-semibold text-white hover:bg-mist-600"
-            >
-              Completar “{emptyTarget.title}”
-            </button>
+      {mapError ? (
+        <p role="alert" className="text-sm text-berry-600">
+          {mapError}
+        </p>
+      ) : null}
+
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_16rem]">
+        <div className="relative overflow-hidden rounded-3xl border border-mist-200 bg-mist-100">
+          <div
+            ref={mapNode}
+            className="lbook-map h-[70dvh] max-h-[640px] min-h-[320px] w-full"
+          />
+          {clusters.length === 0 ? (
+            <div className="pointer-events-none absolute inset-x-0 bottom-4 z-10 flex justify-center px-4">
+              <div className="pointer-events-auto max-w-sm rounded-3xl border border-mist-200 bg-white/95 px-5 py-4 text-center shadow-panel">
+                <p className="font-display text-base font-semibold text-ink-900">
+                  Sem pins ainda
+                </p>
+                <p className="mt-1 text-sm text-ink-500">
+                  Informe o país de origem nas leituras para marcar o mapa.
+                </p>
+                {emptyTarget ? (
+                  <button
+                    type="button"
+                    onClick={() => onAddCountry(emptyTarget)}
+                    className="mt-3 rounded-full bg-mist-700 px-4 py-2 text-sm font-semibold text-white hover:bg-mist-600"
+                  >
+                    Completar “{emptyTarget.title}”
+                  </button>
+                ) : null}
+              </div>
+            </div>
           ) : null}
         </div>
-      ) : (
-        <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_16rem]">
-          <div className="relative overflow-hidden rounded-3xl border border-mist-200">
-            <div ref={mapNode} className="h-[min(70dvh,640px)] w-full" />
-          </div>
+        {clusters.length > 0 ? (
           <aside className="rounded-3xl border border-mist-200 bg-white p-3">
             <p className="px-2 py-1 text-xs font-semibold tracking-[0.16em] text-ink-500 uppercase">
               Países
             </p>
             {countryList}
           </aside>
-        </div>
-      )}
+        ) : null}
+      </div>
 
       {selected && !compact
         ? createPortal(

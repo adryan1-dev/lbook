@@ -116,6 +116,12 @@
   a {
     touch-action: manipulation;
   }
+
+  .lbook-map canvas {
+    max-width: none;
+    width: 100%;
+    height: 100%;
+  }
 }
 
 @layer components {
@@ -167,6 +173,29 @@
       rgb(38 51 74 / 5%) 9%,
       transparent 14%
     );
+  }
+
+  .lbook-map.maplibregl-map {
+    width: 100%;
+    height: 70dvh;
+    max-height: 640px;
+    min-height: 320px;
+  }
+
+  /* Tailwind Preflight sets canvas { max-width: 100%; height: auto }, which
+     collapses the MapLibre WebGL canvas to a blank box. */
+  .lbook-map .maplibregl-canvas,
+  .lbook-map canvas {
+    display: block;
+    max-width: none;
+    width: 100%;
+    height: 100%;
+  }
+
+  .lbook-map .maplibregl-canvas-container,
+  .lbook-map .maplibregl-control-container {
+    width: 100%;
+    height: 100%;
   }
 
   .lbook-map-pin {
